@@ -17,9 +17,10 @@ class Eppriorizado_model extends CI_Model {
         $query = $this
                 ->db
                 //->select('CAST( ST_AsBinary(the_geom) AS text) AS geom, Shape_Area AS shape_area, COD_BARRIO AS cod_barrio, NOMBRE AS nombre, OBJECTID_1 AS object_id ', FALSE)
-                ->select('epriorizado.id, ST_AsGeoJSON(epriorizado.the_geom) AS geom, epriorizado.shape_area AS shape_area, barrios.id_barrio AS cod_barrio, epriorizado.nombre AS nombre', FALSE)
-                ->from('epriorizado')
-                ->join('barrios', 'barrios.id_barrio = epriorizado.id_barrio');
+                //->select('epriorizado.id, ST_AsGeoJSON(epriorizado.the_geom) AS geom, epriorizado.shape_area AS shape_area, barrios.id_barrio AS cod_barrio, epriorizado.nombre AS nombre', FALSE)
+                ->select('epriorizado."idEprio" AS id, ST_AsGeoJSON(epriorizado.the_geom) AS geom, epriorizado.shape_area AS shape_area, epriorizado.nombre AS nombre', FALSE)
+                ->from('epriorizado');
+                //->join('barrios', 'barrios.id_barrio = epriorizado.id_barrio');
                 //->get('epriorizado', 10);
                 //->get('epriorizado');
 
