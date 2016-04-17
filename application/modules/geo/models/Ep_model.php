@@ -38,8 +38,13 @@ class Ep_model extends CI_Model {
         $query = $this
                 ->db
                 ->select ('id_ep as id, ST_AsGeoJSON(the_geom) as geom, categoria, escala, fuente, nombre, shape_area, barrio, comuna, estra_moda as estrato, idtipo, fechaactualizacion, fechacreacion ', FALSE)
-                ->where ("ST_Intersects(ST_PolygonFromText('POLYGON ((".$bounds['southwest']['lng']." ".$bounds['southwest']['lat'].", ".$bounds['northeast']['lng']." ".$bounds['northeast']['lat'].", 
-                ".$bounds['northwest']['lng']." ".$bounds['northwest']['lat'].", ".$bounds['southeast']['lng']." ".$bounds['southeast']['lat'].", ".$bounds['southwest']['lng']." ".$bounds['southwest']['lat']."))', 4326), ep.the_geom)",NULL, FALSE)
+                ->where ("ST_Intersects(ST_PolygonFromText('POLYGON ((
+
+                    ".$bounds['southwest']['lng']." ".$bounds['southwest']['lat'].", 
+                    ".$bounds['southeast']['lng']." ".$bounds['southeast']['lat'].",
+                    ".$bounds['northeast']['lng']." ".$bounds['northeast']['lat'].",
+                    ".$bounds['northwest']['lng']." ".$bounds['northwest']['lat'].",  
+                    ".$bounds['southwest']['lng']." ".$bounds['southwest']['lat']."))', 4326), ep.the_geom)",NULL, FALSE)
                 ->get('ep');      
 
                  
