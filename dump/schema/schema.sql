@@ -7,7 +7,7 @@ CREATE TABLE quejas
   fecha timestamp without time zone NOT NULL,
   radicado character varying(50) NOT NULL,
   frips integer NOT NULL,
-  comentario character varying(50),
+  comentario text,
   ip character varying(50) NOT NULL,
   tipoep_id integer NOT NULL,
   fechaactualizacion timestamp without time zone,

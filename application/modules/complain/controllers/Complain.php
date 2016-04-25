@@ -79,7 +79,7 @@ class Complain extends CI_Controller {
         $fecha_radicado     = date('Y-m-d H:i:s');
         $radicado           = uniqid().time();
         $comentario         = $this->input->post('recipient-message-text');
-        $tipoep_id          = 1;
+        $tipoep_id          = $this->input->post('recipient-tipoep-id');;
         $ip                 = $this->input->ip_address();
 
         $data[] = array(

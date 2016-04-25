@@ -13,11 +13,8 @@ class Comuna_model extends CI_Model {
        $query = $this
                ->db
                ->select('comunas.fidcomuna AS id, ST_AsGeoJSON(comunas.the_geom) AS geom,
-                comunas.nombre AS nombre, comunas.area AS area, comunas.perimetro AS perimetro,
-                comunas.comuna AS comuna', FALSE)
+                comunas.nombre AS nombre, comunas.area AS area, comunas.perimetro AS perimetro, comunas.comuna AS comuna', FALSE)
                ->from('comunas');
-               //->get('epriorizado', 10);
-               //->get('epriorizado');
 
        //return $query->result();
        return $query->get()->result();

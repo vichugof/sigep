@@ -21,6 +21,7 @@
                 <form id="formComplain" action="http://sigep.dev/index.php/complain/create" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="recipient-queja-id" class="form-control" id="recipient_queja_id" value="">
                     <input type="hidden" name="recipient-ref-ep-id" class="form-control" id="recipient_ref_ep_id" value="">
+                    <input type="hidden" name="recipient-tipoep-id" class="form-control" id="recipient_tipoep_id" value="">
                     <div class="form-group">
                         <label for="recipient-name" class="control-label">Nombre:</label>
                         <input type="text" required name="recipient-name" class="form-control" id="recipient_name" value="">
@@ -74,6 +75,11 @@
         
         if(idx_complain_view == undefined){
             idx_complain_view = 0;
+        }
+        var titleModal = 'Queja - Radicado:';
+
+        if($('#recipient_tipoep_id').val() == 4){
+            var titleModal = 'Queja EP Nuevo - Radicado:';
         }
 
         $('#complainModal .modal-title').html('Queja - Radicado: '+data.quejas[idx_complain_view].radicado+' - Fecha: '+data.quejas[idx_complain_view].fecha)
