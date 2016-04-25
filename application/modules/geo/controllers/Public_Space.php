@@ -6,84 +6,54 @@ class Public_Space extends CI_Controller {
         $this->load->view('public_space_index');
     }
 
-    // public function get_layers(){
-    public function get_epriorizado_layers(){
+    public function create_ep_nuevo(){
+        $layers = $this->input->post('layers', TRUE);
+        $this->load->model('Epnuevo_model', 'epnuevo');   
 
+        foreach ($layers as $layer) {
+           $result = $this->epnuevo->new_entries($layer);
+           
+        }        
 
-        $this->load->model('Eppriorizado_model', 'eppriorizado');
-        $this->load->model('Ep_model', 'ep');
-
-        // $result = $this->eppriorizado->get_last_ten_entries();
-        $result = $this->eppriorizado->get_entries();
-
-        $output_epriorizado = array();
-        //echo "<pre>"; print_r($result); echo "</pre>"; 
-        foreach ($result as $item) {
-            //$wkb = pg_unescape_bytea($item['geom']); // Make sure to unescape the hex blob
-            //$wkb = pg_unescape_bytea($item->geom); // Make sure to unescape the hex blob
-            //$geom = geoPHP::load($wkb, 'ewkb'); // We now a full geoPHP Geometry object
-
-            //$output[] = pg_escape_bytea($geom->out('ewkb'));
-            //$output[]['geom'] = pg_escape_bytea($geom->out('geojson'));
-            $feature = array();
-            $feature['id'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            $feature['shape_area'] = $item->shape_area;
-            // $feature['cod_barrio'] = $item->cod_barrio;
-            $feature['nombre'] = $item->nombre;
-            $output_epriorizado[] = $feature;
-        }
-
-        // $result = $this->ep->get_entries();
-
-        // $output_ep = array();
-
-        // foreach ($result as $item) {
-
-        //     $feature = array();
-        //     $feature['id'] = $item->id;
-        //     $feature['geom'] = (array)json_decode($item->geom);
-        //     $feature['fuente'] = $item->fuente;
-        //     $feature['categoria'] = $item->categoria;
-        //     $feature['nombre'] = $item->nombre;
-        //     $output_ep[] = $feature;
-        // }
-
-        $this->load->view( 'eppriorizado_layer_json', 
-            array(
-                    'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
-                    // 'geojsonep' => $this->convertToGeojson($output_ep),
+        $output = array(
+            'success'   => true,
+            'data'      => array(
+                'success'       => 'success', 
+                'supplemental'  => $result
             ) 
         );
+
+        $this->output->set_content_type('application/json')
+             ->set_output( json_encode($output) );
+
+        return;
     }
 
-    public function get_eptrabajo_layers(){
+    public function get_eptrabajo_layers() { 
 
        
-       $this->load->model('Barrio_model', 'Barrio');
-       $this->load->model('Comuna_model', 'Comuna');
-       
-     
+       $this->load->model('Barrio_model', 'Barrio');              
        $result = $this->Barrio->get_entries();    
        $output_barrios = array();
              
-       foreach ($result as $item) {
+       foreach ($result as $item) { 
 
             $feature = array();
+            //$feature['id'] = $item->id;
             $feature['id'] = $item->id;
-            $feature['fidbarrio'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            // $feature['the_geom'] = (array)json_decode($item->geom);
-            $feature['nombre'] = $item->nom_barrio;
+            $feature['the_geom'] = (array)json_decode($item->geom);
+            $feature['nombre'] = $item->nombre;
             $feature['fidcomuna'] = $item->comuna;
             $feature['estra_moda'] = $item->estrato;
             $feature['area'] = $item->area;
             $feature['perimetro'] = $item->perimetro;
-            $feature['color'] = '#DEF7B8';
+            $feature['color'] = '#838685';
+            $feature['border_color'] = '#181A19';
             $output_barrios[] = $feature;
-            $feature['border_color'] = '#58FAF4';
+            
        }
 
+       $this->load->model('Comuna_model', 'Comuna');
        $result = $this->Comuna->get_entries();
        $output_comunas = array();
 
@@ -91,55 +61,113 @@ class Public_Space extends CI_Controller {
 
             $feature = array();
             $feature['id'] = $item->id;
-            $feature['fidcomuna'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            // $feature['the_geom'] = (array)json_decode($item->geom);
+            $feature['the_geom'] = (array)json_decode($item->geom);
             $feature['nombre'] = $item->nombre;
             $feature['area'] = $item->area;
             $feature['perimetro'] = $item->perimetro;
             $feature['comuna'] = $item->comuna;
-            // $feature['color'] = '#58FAF4';
+            $feature['color'] = '#006633';
             $feature['outline_style'] = 'solid';
-            $feature['border_color'] = '#58FAF4';
-           
+            $feature['border_color'] = '#006633';
             $output_comunas[] = $feature;
        }
 
-        $this->load->model('Eppriorizado_model', 'eppriorizado');
+
+        $this->load->model('Eppropuesto_model', 'eppropuesto'); 
+        $result = $this->eppropuesto->get_entries();
+        $output_epropuesto = array();
         
-        $result = $this->eppriorizado->get_entries();
-
-        $output_epriorizado = array();
-
-        foreach ($result as $item) {
+        foreach ($result as $item) {            
 
             $feature = array();
             $feature['id'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
+            $feature['the_geom'] = (array)json_decode($item->the_geom);
+            $feature['comuna'] = $item->comuna;
+            $feature['actualizacion'] = $item->fechaactualizacion;
+            $feature['creacion'] = $item->fechacreacion;
             $feature['shape_area'] = $item->shape_area;
+            $feature['id_tipo'] = $item->idtipo;
+            $feature['tipo'] = $item->tipo;
             $feature['nombre'] = $item->nombre;
+            $feature['color'] = '#E2A11E';
+            $feature['outline_style'] = 'solid';
+            $feature['border_color'] = '#A87000';
+            $output_epropuesto[] = $feature;
+
+            
+        }
+
+
+        $this->load->model('Eppriorizado_model', 'eppriorizado');     
+        $result = $this->eppriorizado->get_entries();
+        $output_epriorizado = array();
+
+
+        foreach ($result as $item) {            
+
+            $feature = array();
+            $feature['id'] = $item->id;
+            $feature['the_geom'] = (array)json_decode($item->the_geom);
+            $feature['comuna'] = $item->comuna;
+            $feature['actualizacion'] = $item->fechaactualizacion;
+            $feature['creacion'] = $item->fechacreacion;
+            $feature['barrio'] = $item->barrio;
+            $feature['shape_area'] = $item->shape_area;
+            $feature['id_tipo'] = $item->idtipo;
+            $feature['nombre'] = $item->nombre;
+            $feature['color'] = '#CC0000';
+            $feature['outline_style'] = 'solid';
+            $feature['border_color'] = '#CC0000';
             $output_epriorizado[] = $feature;
         }
 
+        $this->load->model('Epnuevo_model', 'epnuevo');   
+        $result = $this->epnuevo->get_entries();
+        $output_epnuevos = array();
+
+
+        foreach ($result as $item) {            
+
+            $feature = array();
+            $feature['id'] = $item->id;
+            $feature['the_geom'] = (array)json_decode($item->the_geom);
+            $feature['shape_area'] = $item->area;
+            $feature['barrio'] = $item->barrio;
+            $feature['actualizacion'] = $item->fechaactualizacion;
+            $feature['creacion'] = $item->fechacreacion;   
+            $feature['id_tipo'] = $item->idtipo;
+            $feature['color'] = '#7F00FF';
+            $feature['outline_style'] = 'solid';
+            $feature['border_color'] = '#7F00FF';
+            $output_epnuevos[] = $feature;
+
+        }
+        
+               
        $this->load->view( 'eppriorizado_layer_json',
 
            array(
-               'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
+               
                'geojsoncomuna' => $this->convertToGeojson($output_comunas),
-               'geojsonbarrio' => $this->convertToGeojson($output_barrios)
+               'geojsonbarrio' => $this->convertToGeojson($output_barrios),
+               'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
+               'geojsonepropuesto' => $this->convertToGeojson($output_epropuesto),
+               'geojsonepnuevo' => $this->convertToGeojson($output_epnuevos),
+               
            )
        );
 
-   }
+   
+    }
+
 
     function get_ep_rows(){
         //load the model
         $this->load->model('Ep_model', 'ep');
-
-        $coor = $this->input->post('coor', TRUE);
-
+        $bounds = $this->input->post('bounds', TRUE);
         //get the rows from ep
-        $result = $this->ep->get_entries($coor['lng'], $coor['lat'], 1000);
+        /*$result = $this->ep->get_entries($coor['lng'], $coor['lat'], 3000);*/
+        $result = $this->ep->get_entries_by_bounds($bounds);
 
         $output_ep = array();
         //echo "<pre>"; print_r($result); echo "</pre>"; 
@@ -147,10 +175,17 @@ class Public_Space extends CI_Controller {
 
             $feature = array();
             $feature['id'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
+            $feature['the_geom'] = (array)json_decode($item->geom);
             $feature['fuente'] = $item->fuente;
             $feature['categoria'] = $item->categoria;
             $feature['nombre'] = $item->nombre;
+            $feature['escala'] = $item->escala;
+            $feature['shape_area'] = $item->shape_area;
+            $feature['creacion'] = $item->fechacreacion;
+            $feature['actualizacion'] = $item->fechaactualizacion;
+            $feature['id_tipo'] = $item->idtipo;
+            $feature['comuna'] = $item->comuna;
+            $feature['barrio'] = $item->barrio;
             $output_ep[] = $feature;
         }
 
@@ -180,7 +215,7 @@ class Public_Space extends CI_Controller {
                 "type" => "Feature", 
                 "id" => $coordinate['id'], 
                 "properties" => array(), 
-                "geometry" => $coordinate['geom']
+                "geometry" => $coordinate['the_geom']
             );
 
             foreach($coordinate as $column => $value){
@@ -191,4 +226,5 @@ class Public_Space extends CI_Controller {
         }
         return $result;
     }
+
 }
