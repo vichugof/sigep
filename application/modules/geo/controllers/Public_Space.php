@@ -6,6 +6,50 @@ class Public_Space extends CI_Controller {
         $this->load->view('public_space_index');
     }
 
+    public function get_ep_row(){
+      $ep_id = $this->input->get_post('ep_id', TRUE);
+      $this->load->model('Ep_model', 'ep');
+      $this->load->model('complain/Queja_model', 'queja');
+      $this->load->model('complain/Anexosep_model', 'anexos');
+
+      $result = $this->ep->get_entry_by_id_with_centroid($ep_id);
+
+      $output_ep = array();
+
+      foreach ($result as $item) {
+        $feature = array();
+        $feature['id'] = $item->id;
+        $feature['geom'] = (array)json_decode($item->geom);
+        $feature['centroid'] = (array)json_decode($item->centroid);
+        $feature['fuente'] = $item->fuente;
+        $feature['categoria'] = $item->categoria;
+        $feature['nombre'] = $item->nombre;
+
+        $queja  = $this->queja->where('frips =', $ep_id)->get_all();
+        foreach ($queja as &$item) {
+          $anexos = $this->anexos->where('queja_id =', $item->id)->get_all();
+          $item->anexos = $anexos;
+        }
+
+        $feature['quejas'] = $queja;
+
+        $output_ep[] = $feature;
+      }
+
+      $output = array(
+            'success'   => true,
+            'data'      => array(
+                'success'       => 'success', 
+                'supplemental'  => $this->convertToGeojson($output_ep)
+            ) 
+        );
+
+      $this->output->set_content_type('application/json')
+           ->set_output( json_encode($output) );
+
+      return;
+    }
+
     // public function get_layers(){
     public function get_epriorizado_layers(){
 
@@ -59,51 +103,52 @@ class Public_Space extends CI_Controller {
 
     public function get_eptrabajo_layers(){
 
-       
-       $this->load->model('Barrio_model', 'Barrio');
-       $this->load->model('Comuna_model', 'Comuna');
+       $this->load->helper('text');
+       $base_url_uploads = 'http://localhost/~vichugof/sigep/upload/';
+       // $this->load->model('Barrio_model', 'Barrio');
+       // $this->load->model('Comuna_model', 'Comuna');
        
      
-       $result = $this->Barrio->get_entries();    
-       $output_barrios = array();
+       // $result = $this->Barrio->get_entries();    
+       // $output_barrios = array();
              
-       foreach ($result as $item) {
+       // foreach ($result as $item) {
 
-            $feature = array();
-            $feature['id'] = $item->id;
-            $feature['fidbarrio'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            // $feature['the_geom'] = (array)json_decode($item->geom);
-            $feature['nombre'] = $item->nom_barrio;
-            $feature['fidcomuna'] = $item->comuna;
-            $feature['estra_moda'] = $item->estrato;
-            $feature['area'] = $item->area;
-            $feature['perimetro'] = $item->perimetro;
-            $feature['color'] = '#DEF7B8';
-            $output_barrios[] = $feature;
-            $feature['border_color'] = '#58FAF4';
-       }
+       //      $feature = array();
+       //      $feature['id'] = $item->id;
+       //      $feature['fidbarrio'] = $item->id;
+       //      $feature['geom'] = (array)json_decode($item->geom);
+       //      // $feature['the_geom'] = (array)json_decode($item->geom);
+       //      $feature['nombre'] = $item->nom_barrio;
+       //      $feature['fidcomuna'] = $item->comuna;
+       //      $feature['estra_moda'] = $item->estrato;
+       //      $feature['area'] = $item->area;
+       //      $feature['perimetro'] = $item->perimetro;
+       //      $feature['color'] = '#DEF7B8';
+       //      $output_barrios[] = $feature;
+       //      $feature['border_color'] = '#58FAF4';
+       // }
 
-       $result = $this->Comuna->get_entries();
-       $output_comunas = array();
+       // $result = $this->Comuna->get_entries();
+       // $output_comunas = array();
 
-       foreach ($result as $item) {
+       // foreach ($result as $item) {
 
-            $feature = array();
-            $feature['id'] = $item->id;
-            $feature['fidcomuna'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            // $feature['the_geom'] = (array)json_decode($item->geom);
-            $feature['nombre'] = $item->nombre;
-            $feature['area'] = $item->area;
-            $feature['perimetro'] = $item->perimetro;
-            $feature['comuna'] = $item->comuna;
-            // $feature['color'] = '#58FAF4';
-            $feature['outline_style'] = 'solid';
-            $feature['border_color'] = '#58FAF4';
+       //      $feature = array();
+       //      $feature['id'] = $item->id;
+       //      $feature['fidcomuna'] = $item->id;
+       //      $feature['geom'] = (array)json_decode($item->geom);
+       //      // $feature['the_geom'] = (array)json_decode($item->geom);
+       //      $feature['nombre'] = $item->nombre;
+       //      $feature['area'] = $item->area;
+       //      $feature['perimetro'] = $item->perimetro;
+       //      $feature['comuna'] = $item->comuna;
+       //      // $feature['color'] = '#58FAF4';
+       //      $feature['outline_style'] = 'solid';
+       //      $feature['border_color'] = '#58FAF4';
            
-            $output_comunas[] = $feature;
-       }
+       //      $output_comunas[] = $feature;
+       // }
 
         $this->load->model('Eppriorizado_model', 'eppriorizado');
         
@@ -121,12 +166,17 @@ class Public_Space extends CI_Controller {
             $output_epriorizado[] = $feature;
         }
 
-       $this->load->view( 'eppriorizado_layer_json',
+        $this->load->model('complain/Queja_model', 'queja');
+        $quejas = $this->queja->order_by('fechacreacion', 'ASC')->get_all();
+
+        $this->load->view( 'eppriorizado_layer_json',
 
            array(
                'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
-               'geojsoncomuna' => $this->convertToGeojson($output_comunas),
-               'geojsonbarrio' => $this->convertToGeojson($output_barrios)
+               'quejas' => $quejas,
+               'base_url_uploads' => $base_url_uploads
+               // 'geojsoncomuna' => $this->convertToGeojson($output_comunas),
+               // 'geojsonbarrio' => $this->convertToGeojson($output_barrios)
            )
        );
 
@@ -136,10 +186,12 @@ class Public_Space extends CI_Controller {
         //load the model
         $this->load->model('Ep_model', 'ep');
 
-        $coor = $this->input->post('coor', TRUE);
+        // $center = $this->input->post('center', TRUE);
+        $bounds = $this->input->post('bounds', TRUE);
 
         //get the rows from ep
-        $result = $this->ep->get_entries($coor['lng'], $coor['lat'], 1000);
+        // $result = $this->ep->get_entries($center['lng'], $center['lat'], 1000);
+        $result = $this->ep->get_entries_by_bounds($bounds);
 
         $output_ep = array();
         //echo "<pre>"; print_r($result); echo "</pre>"; 
@@ -166,6 +218,14 @@ class Public_Space extends CI_Controller {
              ->set_output( json_encode($output) );
 
         return;
+    }
+
+    public function get_main_view($parameters){
+      $this->load->view( '_main_view',
+            array(
+              'parameters' => $parameters,
+            )
+      );
     }
 
     public function convertToGeojson($coordinates){

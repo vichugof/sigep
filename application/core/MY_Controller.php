@@ -5,7 +5,7 @@ class MY_Controller extends CI_Controller {
     'app.css'
   );
   protected $javascripts = array(
-  'app.js', 'jquery-1.12.0.min.js', 'jquery-migrate-1.2.1.min.js'
+    'app.js', 'jquery-1.12.0.min.js', 'jquery-migrate-1.2.1.min.js'
   );
   protected $local_stylesheets = array();
   protected $local_javascripts = array();

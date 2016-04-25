@@ -7,53 +7,23 @@
         <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js?ver=4.3.1"></script>
         <!-- <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/leaflet.markercluster.js?ver=4.3.1"></script> -->
         <link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
+        <!-- <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">-->
+        <link href="http://localhost/~vichugof/sigep/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
         <!-- <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.css' rel='stylesheet' />
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v0.4.0/MarkerCluster.Default.css' rel='stylesheet' /> -->
         <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
         <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-
+        <!-- <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js') ?>"></script>-->
+        <script src="http://localhost/~vichugof/sigep/assets/bootstrap/js/bootstrap.min.js"></script>
         <style type="text/css">
-            html, body{
-                height: 100%;
-            }
-            #spacepublic {
-                height: 100%;
-                width: 80%;
-                float: left;
-            }
-            #streetview {
-                height: 100%;
-                width: 20%;
-                float: left;
-            }
-
-            .spacePublic {
-                padding: 6px 8px;
-                font: 14px/16px Arial, Helvetica, sans-serif;
-                background: white;
-                background: rgba(255,255,255,0.8);
-                box-shadow: 0 0 15px rgba(0,0,0,0.2);
-                border-radius: 5px;
-            }
-
-            #map_streetview, #pano_streetview {
-                float: left;
-                height: 50%;
-                width: 100%;
-            }
+           
 
         </style>
     </head>
 
     <body>
-        <div>
-            <div id='spacepublic'></div>
-            <div id='streetview'>
-                <div id="map_streetview"></div>
-                <div id="pano_streetview"></div>
-            </div>
-        </div>
-
+        <?php echo Modules::run('geo/Public_Space/get_main_view', array()); ?>
         <script type="text/javascript">
             var geojsonEpriorizado;
             var geojsonBarrio;
@@ -61,6 +31,8 @@
             var featureLayer = L.mapbox.featureLayer();
             var panorama;
             var mapGoogleMaps;
+            var layerSelectedProccessed;
+            var base_url_uploads = '<?php echo $base_url_uploads; ?>';
 
             function style(feature) {
                 return {
@@ -116,8 +88,8 @@
             }
 
             var spacepublic = {
-                barrio: '<?php echo json_encode($geojsonbarrio); ?>',
-                epriorizado : '<?php echo json_encode($geojsonepriorizado); ?>'/*,
+                /*barrio: '<?php //echo json_encode($geojsonbarrio); ?>',
+                epriorizado : '<?php //echo json_encode($geojsonepriorizado); ?>',
                 ep : '<?php //echo json_encode($geojsonep); ?>'*/
             };
 
@@ -126,9 +98,11 @@
 
             // var map = L.mapbox.map('spacepublic', 'mapbox.streets',{maxZoom:12, minZoom:4})
             //     .setView([31.783300, 35.216700], 3);
-            var map = L.mapbox.map('spacepublic', 'mapbox.streets')
+            var map = L.mapbox.map('spacepublic', 'mapbox.streets', { zoomControl: false })
                  // .setView([3.4424557822539, -76.484385061106], 13);
                  .setView([3.4266, -76.5198], 12);
+
+            new L.Control.Zoom({ position: 'topright' }).addTo(map);
 
             // control that shows state info on hover
             var info = L.control();
@@ -158,51 +132,28 @@
             //                                 } 
             //                     ).addTo(map);
 
-            geojsonBarrio = L.geoJson( JSON.parse(spacepublic.barrio), 
-                                    {
-                                        style: style, 
-                                        onEachFeature: onEachFeature
-                                    } 
-                                ).addTo(map);
+            // geojsonBarrio = L.geoJson( JSON.parse(spacepublic.barrio), 
+            //                         {
+            //                             style: style, 
+            //                             onEachFeature: onEachFeature
+            //                         } 
+            //                     ).addTo(map);
 
-            map.on('move', function() {
-                // retrieveEp();
+            // map.on('move', function() {
+            map.on('moveend', function() {
+                if (map.getZoom() > 15) {
+                    retrieveEp();
+                }else {
+                    map.featureLayer.setFilter(function() { return false; });
+                    map.removeLayer(featureLayer);
+                }
             });
             
             map.on('click', function(e) {
-                //window[e.type].innerHTML = e.containerPoint.toString() + ', ' + e.latlng.toString();
-                // console.log(e.containerPoint.toString() + ', ' + e.latlng.toString(), e.latlng.lat, e.latlng.lng);
-                // var astorPlace = {lat: e.latlng.lat, lng: e.latlng.lng};
-                // panorama.setPosition(astorPlace);
-                // panorama.setPov(/** @type {google.maps.StreetViewPov} */({
-                //     heading: 34,
-                //     pitch: 10
-                // }));
-                // panorama.setVisible(true);
-
-                // var fenway = {lat: e.latlng.lat, lng: e.latlng.lng};
-                // mapGoogleMaps.setCenter(fenway);
-
-                // mapGoogleMaps.setZoom(map.getZoom());
                 updateStreetView(e);
 
             });
 
-            map.on('zoomend', function() {
-                // here's where you decided what zoom levels the layer should and should
-                // not be available for: use javascript comparisons like < and > if
-                // you want something other than just one zoom level, like
-                // (map.getZoom > 10)
-                if (map.getZoom() > 15) {
-                    retrieveEp();
-                } else {
-                    map.featureLayer.setFilter(function() { return false; });
-                    map.removeLayer(featureLayer);
-                    //map.removeLayer(geojsonEp);
-                }
-
-                //console.log('center', map.getCenter());
-            });     
             
             function retrieveEp(){
                 // setFilter is available on L.mapbox.featureLayers only. Here
@@ -213,15 +164,23 @@
                 // similar methods like .setOpacity(0) and .setOpacity(1)
                 // to hide or show it.
 
-                //map.featureLayer.setFilter(function() { return true; });
-                //geojsonEp = L.geoJson( JSON.parse(spacepublic.ep) ).addTo(map);
                 var coordinates_center = map.getCenter();
-                var dataRequest = {coor: {lat: coordinates_center.lat, lng: coordinates_center.lng}};
+                var dataRequest = 
+                {
+                    center: {
+                        lat: coordinates_center.lat, 
+                        lng: coordinates_center.lng,
 
-                console.log('Bounds', map.getBounds().getSouthWest());
-                console.log('Bounds', map.getBounds().getNorthEast());
-                console.log('Bounds', map.getBounds().getNorthWest());
-                console.log('Bounds', map.getBounds().getSouthEast());
+                    },
+                    bounds: {
+                        southwest: {lat: map.getBounds().getSouthWest().lat, lng:  map.getBounds().getSouthWest().lng},
+                        northeast: {lat: map.getBounds().getNorthEast().lat, lng:  map.getBounds().getNorthEast().lng},
+                        northwest: {lat: map.getBounds().getNorthWest().lat, lng:  map.getBounds().getNorthWest().lng},
+                        southeast: {lat: map.getBounds().getSouthEast().lat, lng:  map.getBounds().getSouthEast().lng},
+                    }
+                };
+
+                console.log(dataRequest.center);
 
                 $.ajax({
                     url: 'http://sigep.dev/index.php/geo/get_ep',    
@@ -233,12 +192,42 @@
 
                     if(result.success == true && result.data.success == 'success'){
 
-                        //geojsonEp = L.geoJson( result.data.supplemental ).addTo(map);
+                        featureLayer.clearLayers();
                         featureLayer.setGeoJSON( result.data.supplemental );
+                        featureLayer.eachLayer(function (layer) {
+
+                            layer.on('click', function(e){
+                                
+                                var $modal = $('#complainModal');
+
+                                if(layerSelectedProccessed.id == layer.feature.id){
+                                    setDataFormComplain(layerSelectedProccessed, 0);
+                                }else{
+                                    $modal.find('.modal-body input').val('');
+                                    $modal.find('.modal-body textarea').val('');
+                                    $modal.find('.modal-title').html('Queja');
+                                    $modal.find('.modal-title').html('Queja');
+                                    $modal.find('#buttonSendMessage').html('Enviar Queja');
+                                    $modal.find('.modal-footer .list-group').html('');
+                                    $modal.find('.attachments-complain').html('');
+                                }
+                                
+                                $modal.modal('toggle');
+                                
+                                $('#recipient_ref_ep_id').val(layer.feature.id);
+                            });
+
+                            layer.on('mouseover', function(e){
+                                retrieveComplain(layer.feature);
+                                console.log('mouseover', layer.feature);
+
+                            });
+                        });
+
                         map.addLayer(featureLayer);
-                        //console.log('enter if',result.success ,result.data.success , result, map.getCenter());
+                        featureLayer.bringToFront();
+
                     }
-                    //console.log('global',result.success ,result.data.success , result);
                     
                 })
                 .fail(function( jqXHR, textStatus ) {
@@ -293,10 +282,88 @@
                 mapGoogleMaps.setZoom(map.getZoom());
             }
 
+            function retrieveComplain(featureLayer){
+                featureLayer.geometry = null;
+                featureLayer.properties.geom = null;
+
+                dataRequest = {
+                    ep_id: featureLayer.id,
+                    properties: featureLayer.properties
+                };
+
+                $.ajax({
+                    url: 'http://sigep.dev/index.php/complain/get',    
+                    type: "POST",
+                    cache: false,
+                    data: dataRequest
+                })
+                .done(function( result ) {
+
+                    if(result.success == true && result.data.success == 'success'){
+                        console.log(result.data.supplemental);
+                    }
+                })
+                .fail(function( jqXHR, textStatus ) {
+                    console.log('fail');
+                });
+            }
+
+            $(function() {
+                $('#complainModal').modal({
+                  keyboard: true,
+                  show: false
+                });
+
+                $(".list-complain-sigep").each(function(){
+                    $(this).click(function(e){
+                        e.preventDefault();
+                        var frip = $(this).data('frips');
+                        var dataRequest = {ep_id: frip};
+                        $.ajax({
+                            url: 'http://sigep.dev/index.php/geo/get_ep/centroid',    
+                            type: "POST",
+                            cache: false,
+                            data: dataRequest
+                        })
+                        .done(function( result ) {
+
+                            if(result.success == true && result.data.success == 'success'){
+                                //console.log(result.data.supplemental);
+
+                                if(result.data.supplemental.features[0] != undefined){
+                                    var centroid = result.data.supplemental.features[0].properties.centroid.coordinates;
+                                    var ep_id = result.data.supplemental.features[0].id;
+                                    //console.log(result.data.supplemental.features[0].properties.centroid.coordinates);    
+
+                                    map.setView([centroid[1], centroid[0]], 17);
+
+                                    layerSelectedProccessed = result.data.supplemental.features[0].properties;
+
+                                    var modified_layer = setTimeout(function(){ change_layer(); }, 700);
+
+                                    var change_layer = function(){
+                                        var layersLoaded = featureLayer.getLayers();
+                                        for (var idx_layer in layersLoaded){
+                                            if(layersLoaded[idx_layer].feature.id == ep_id){
+                                                layersLoaded[idx_layer].setStyle({fillColor: '#bd0026'});
+                                            }
+                                        }
+                                        // console.log(layersLoaded);
+                                    };
+                                }
+                            }
+                        })
+                        .fail(function( jqXHR, textStatus ) {
+                            console.log('fail');
+                        });
+                    });
+                });
+            });
         </script>
         <script async defer
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfb2MlpqmJHgBEuF2hBG6AwNYARw_72d8&signed_in=true&callback=initialize">
         </script>
 
+        <?php echo Modules::run('complain/Complain/get_form_register', array()); ?>
     </body>
 </html> 

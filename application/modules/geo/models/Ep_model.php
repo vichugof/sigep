@@ -17,6 +17,27 @@ class Ep_model extends CI_Model {
     * @param Int $radius radius to query, the measure is meter
     */
 
+    function get_entries_by_id($ep_id){
+        $query = $this
+                ->db
+                ->select('id_ep AS id, ST_AsGeoJSON(the_geom) AS geom, fuente, nombre, categoria, shape_area, barrio, comuna, fechacreacion, fechaactualizacion, idtipo, escala ', FALSE)
+                ->where("ep.id_ep = ".$ep_id, NULL, FALSE)
+                ->get('ep');      
+
+        return $query->result();
+    }
+
+    function get_entry_by_id_with_centroid($ep_id){
+
+         $query = $this
+                ->db
+                ->select('id_ep AS id, ST_AsGeoJSON( ST_Centroid(the_geom) ) AS centroid,  ST_AsGeoJSON( the_geom) AS geom, fuente, nombre, categoria, shape_area, barrio, comuna, fechacreacion, fechaactualizacion, idtipo, escala ', FALSE)
+                ->where("ep.id_ep = ".$ep_id, NULL, FALSE)
+                ->get('ep');      
+
+        return $query->result();
+
+    }
     //FUNCION PARA LLAMAR EP POR ZOOM
     function get_entries($lon=null, $lat=null, $radius=500)
     {
