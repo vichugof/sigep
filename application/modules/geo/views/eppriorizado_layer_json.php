@@ -584,7 +584,8 @@
                  .setView([3.4266, -76.5198], 12);
 
             //OBTENER POSICION ACTUAL        
-            L.control.locate({position: 'topright'}).addTo(map);
+            // L.control.locate({position: 'topright'}).addTo(map);
+            L.control.locate().addTo(map);
             L.control.scale().addTo(map);
             // L.control.Zoom({position: 'topright'}).addTo(map);
             
