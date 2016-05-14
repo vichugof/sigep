@@ -18,7 +18,7 @@
                 <h4 class="modal-title" id="exampleModalLabel">Queja</h4>
             </div>
             <div class="modal-body">
-                <form id="formComplain" action="http://sigep.dev/index.php/complain/create" method="post" enctype="multipart/form-data">
+                <form id="formComplain" action="<?php echo base_url('public/index.php/complain/create'); ?>" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="recipient-queja-id" class="form-control" id="recipient_queja_id" value="">
                     <input type="hidden" name="recipient-ref-ep-id" class="form-control" id="recipient_ref_ep_id" value="">
                     <input type="hidden" name="recipient-tipoep-id" class="form-control" id="recipient_tipoep_id" value="">

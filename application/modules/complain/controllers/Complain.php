@@ -91,6 +91,7 @@ class Complain extends CI_Controller {
             'comentario'        => $comentario, 
             'ip'                => $ip, 
             'tipoep_id'         => $tipoep_id, 
+            'estado_id'         => 1, 
         );
 
         if($queja_id > 0){

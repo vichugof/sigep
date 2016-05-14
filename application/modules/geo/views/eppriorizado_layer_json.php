@@ -7,12 +7,12 @@
         <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js?ver=4.3.1"></script>
         <link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
         <!-- <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">-->
-        <link href="http://localhost/~vichugof/sigep/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
 
         <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
         <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-        <!-- <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js') ?>"></script>-->
-        <script src="http://localhost/~vichugof/sigep/assets/bootstrap/js/bootstrap.min.js"></script>
+         <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js') ?>"></script>
+        <!-- <script src="http://localhost/~vichugof/sigep/assets/bootstrap/js/bootstrap.min.js"></script> -->
 
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/css/font-awesome.min.css' rel='stylesheet' />
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js'></script>
@@ -431,7 +431,7 @@
                             tipoep_id: tipoepId,
                         };
                         $.ajax({
-                            url: base_url+'index.php/geo/get_ep/centroid',    
+                            url: base_url+'/index.php/geo/get_ep/centroid',    
                             type: "POST",
                             cache: false,
                             data: dataRequest
@@ -498,7 +498,7 @@
             });
         </script>
         <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfb2MlpqmJHgBEuF2hBG6AwNYARw_72d8&signed_in=true&callback=initialize">
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCy7nk1vOuAlQvWoGZXK9rqeMq23R3SP7Y&signed_in=true&callback=initialize">
         </script>
 
         <?php echo Modules::run('complain/Complain/get_form_register', array()); ?>

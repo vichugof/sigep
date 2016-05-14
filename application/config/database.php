@@ -74,11 +74,11 @@ $active_group = 'default';
 $query_builder = TRUE;
 
 $db['default'] = array(
-	'dsn'	=> 'pgsql:host=localhost;dbname=tg_sig;port=5432',
+	'dsn'	=> 'pgsql:host=localhost;dbname=TG;port=5432',
 	'hostname' => 'localhost',
 	'username' => 'sigep',
 	'password' => 'sigep',
-	'database' => 'tg_sig',
+	'database' => 'TG',
 	'dbdriver' => 'pdo',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

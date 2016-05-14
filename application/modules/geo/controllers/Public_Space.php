@@ -160,8 +160,8 @@ class Public_Space extends CI_Controller {
     public function get_eptrabajo_layers(){
 
       $this->load->helper('text');
-      $base_url_uploads = 'http://localhost/~vichugof/sigep/upload/';
-      $base_url = base_url();
+      $base_url_uploads = base_url('/sigep/upload/');
+      $base_url = base_url('public');
       $this->load->model('Barrio_model', 'Barrio');
       $this->load->model('Comuna_model', 'Comuna');
        
