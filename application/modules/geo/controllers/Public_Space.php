@@ -107,7 +107,7 @@ class Public_Space extends CI_Controller {
     }
 
     // public function get_layers(){
-    public function get_epriorizado_layers(){
+/*    public function get_epriorizado_layers(){
 
 
         $this->load->model('Eppriorizado_model', 'eppriorizado');
@@ -115,6 +115,7 @@ class Public_Space extends CI_Controller {
 
         // $result = $this->eppriorizado->get_last_ten_entries();
         $result = $this->eppriorizado->get_entries();
+
 
         $output_epriorizado = array();
         //echo "<pre>"; print_r($result); echo "</pre>"; 
@@ -155,7 +156,7 @@ class Public_Space extends CI_Controller {
                     // 'geojsonep' => $this->convertToGeojson($output_ep),
             ) 
         );
-    }
+    }*/
 
     public function get_eptrabajo_layers(){
 
@@ -226,6 +227,31 @@ class Public_Space extends CI_Controller {
         $output_epriorizado[] = $feature;
       }
 
+
+       $this->load->model('Eppropuesto_model', 'eppropuesto');
+
+      $result = $this->eppropuesto->get_entries();
+
+      $output_epropuesto = array();
+
+      foreach ($result as $item) {
+
+        $feature = array();
+        $feature['id'] = $item->id;
+        $feature['the_geom'] = (array)json_decode($item->the_geom);        
+        $feature['id_tipo'] = $item->tipo;
+        $feature['shape_area'] = $item->shape_area;
+        $feature['nombre'] = $item->nombre;
+        $feature['comuna'] = $item->comuna;
+        $feature['actualizacion'] = $item->fechaactualizacion;
+        $feature['creacion'] = $item->fechacreacion;
+        $feature['color'] = '#CC6600';
+        $feature['outline_style'] = 'solid';
+        $feature['border_color'] = '#CC6600';
+        $output_epropuesto[] = $feature;
+      }
+
+
       $this->load->model('complain/Queja_model', 'queja');
       $quejas = $this->queja->order_by('fechacreacion', 'ASC')->get_all();
 
@@ -233,6 +259,7 @@ class Public_Space extends CI_Controller {
 
         array(
           'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
+          'geojsonepropuesto'  => $this->convertToGeojson($output_epropuesto),
           'geojsoncomuna'      => $this->convertToGeojson($output_comunas),
           'geojsonbarrio'      => $this->convertToGeojson($output_barrios),
           'quejas'             => $quejas,

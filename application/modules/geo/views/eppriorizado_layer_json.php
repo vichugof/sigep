@@ -105,15 +105,6 @@
                 updateStreetView(e);
             };
 
-            function onEachFeatureComuna(feature, layer) {
-                layer.on({
-                    mouseover: highlightFeatureComuna,
-                    mouseout: resetHighlightComuna,
-                    click: zoomToFeatureComuna
-                });
-            };
-
-            //ESTILO COMUNA
             function highlightFeatureComuna(e) {
                 var layerComuna = e.target;
                 
@@ -139,19 +130,19 @@
                 info.update();
             };
 
+            function onEachFeatureComuna(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeatureComuna,
+                    mouseout: resetHighlightComuna,
+                    click: zoomToFeatureComuna
+                });
+            };
+
             /*
             * ---------------------------------------------------------
             * Eppriorizado
             * ---------------------------------------------------------
             */
-
-            function onEachFeatureEpriorizado(feature, layer) {
-                layer.on({
-                    mouseover: highlightFeatureEpriorizado,
-                    mouseout: resetHighlightEpriorizado,
-                    click: zoomToFeatureEpriorizado
-                });
-            };
 
             function zoomToFeatureEpriorizado(e) {
                 
@@ -159,7 +150,6 @@
                 updateStreetView(e);
             };
 
-             //ESTILO EPRIORIZADO
             function highlightFeatureEpriorizado(e) {
                 var layerEpriorizado = e.target;
                 
@@ -187,6 +177,60 @@
                 info.update();
             };
 
+            function onEachFeatureEpriorizado(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeatureEpriorizado,
+                    mouseout: resetHighlightEpriorizado,
+                    click: zoomToFeatureEpriorizado
+                });
+            };
+
+            /*
+            * ---------------------------------------------------------
+            * Eppropuesto
+            * ---------------------------------------------------------
+            */
+
+            function zoomToFeatureEpropuesto(e) {
+                
+                countryClicked = true;
+                updateStreetView(e);
+            };
+
+            function highlightFeatureEpropuesto(e) {
+                var layerEpropuesto = e.target;
+                
+                layerEpropuesto.setStyle({
+                    weight: 3,
+                    color: '#CC6600',
+                    dashArray: '',
+                    Opacity: 1.0,
+                    fillOpacity: 0.1
+
+                });
+
+                if (!L.Browser.ie && !L.Browser.opera) {
+                    layerEpropuesto.bringToFront();
+                }
+                
+                info.update(layerEpropuesto.feature.properties);
+
+            };
+
+            function resetHighlightEpropuesto(e) {
+                
+                geojsonEpropuesto.resetStyle(e.target);
+                
+                info.update();
+            };
+
+            function onEachFeatureEpropuesto(feature, layer) {
+                layer.on({
+                    mouseover: highlightFeatureEpropuesto,
+                    mouseout: resetHighlightEpropuesto,
+                    click: zoomToFeatureEpropuesto
+                });
+            };
 
             
             // // //Add map
@@ -227,6 +271,7 @@
                 barrio: '<?php echo json_encode($geojsonbarrio); ?>',
                 comuna : '<?php echo json_encode($geojsoncomuna); ?>',               
                 epriorizado : '<?php echo json_encode($geojsonepriorizado); ?>',
+                epropuesto : '<?php echo json_encode($geojsonepropuesto); ?>',
             };
 
 
@@ -253,6 +298,14 @@
                                     } 
                                 )
             addLayer(geojsonEpriorizado, 'EP priorizado', 3);
+
+            geojsonEpropuesto = L.geoJson( JSON.parse(spacepublic.epropuesto), 
+                                    {
+                                        style: style, 
+                                        onEachFeature: onEachFeatureEpropuesto
+                                    } 
+                                )
+            addLayer(geojsonEpropuesto, 'EP propuesto', 4);
 
             map.on('moveend', function() {
                 if (map.getZoom() > 15) {

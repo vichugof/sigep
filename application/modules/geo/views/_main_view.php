@@ -318,15 +318,7 @@ body {
         layers.appendChild(link);
     };
 
-    /*
-    * TEMPORAL
-    */
-    var link = document.createElement('a');
-            link.href = '#';
-            link.className = '';
-            link.innerHTML = 'EP Propuesto';
-
-    layers.appendChild(link);
+    
 
     /*
     * TEMPORAL
