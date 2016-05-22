@@ -310,25 +310,27 @@
                         featureLayer.setGeoJSON( result.data.supplemental );
                         featureLayer.eachLayer(function (layer) {
 
-                            layer.on('click', function(e){
+                            // layer.on('click', function(e){
                                 
-                                var $modal = $('#complainModal');
-                                if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.id){
-                                    setDataFormComplain(layerSelectedProccessed, 0);
-                                }else{
-                                    $modal.find('.modal-body input').val('');
-                                    $modal.find('.modal-body textarea').val('');
-                                    $modal.find('.modal-title').html('Queja');
-                                    $modal.find('#buttonSendMessage').html('Enviar Queja');
-                                    $modal.find('.modal-footer .list-group').html('');
-                                    $modal.find('.attachments-complain').html('');
-                                }
+                            //     var $modal = $('#complainModal');
+                            //     if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.id){
+                            //         setDataFormComplain(layerSelectedProccessed, 0);
+                            //     }else{
+                            //         $modal.find('.modal-body input').val('');
+                            //         $modal.find('.modal-body textarea').val('');
+                            //         $modal.find('.modal-title').html('Queja');
+                            //         $modal.find('#buttonSendMessage').html('Enviar Queja');
+                            //         $modal.find('.modal-footer .list-group').html('');
+                            //         $modal.find('.attachments-complain').html('');
+                            //     }
                                 
-                                $modal.modal('toggle');
-                                console.log(layer.feature);
-                                $('#recipient_ref_ep_id').val(layer.feature.id);
-                                $('#recipient_tipoep_id').val(1);
-                            });
+                            //     $modal.modal('toggle');
+                            //     console.log(layer.feature);
+                            //     $('#recipient_ref_ep_id').val(layer.feature.id);
+                            //     $('#recipient_tipoep_id').val(1);
+                            // });
+                            layer.on('click', addEventClickLayerToOpenComplain);
+                            
                         });
 
                         map.addLayer(featureLayer);
@@ -342,6 +344,27 @@
                 });
             }
 
+            var addEventClickLayerToOpenComplain = function(e){
+                // console.log( this.feature, this.feature.properties.id, layerSelectedProccessed.id, 'compare', 'load new ep', 'addEventClickLayerToOpenComplain' );
+                var $modal = $('#complainModal');
+                if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == this.feature.properties.id){
+                    setDataFormComplain(layerSelectedProccessed, 0);
+                }else{
+                    $modal.find('.modal-body input').val('');
+                    $modal.find('.modal-body textarea').val('');
+                    $modal.find('.modal-title').html('Queja');
+                    $modal.find('#buttonSendMessage').html('Enviar Queja');
+                    $modal.find('.modal-footer .list-group').html('');
+                    $modal.find('.attachments-complain').html('');
+                }
+                
+                $modal.modal('toggle');
+                console.log(this.feature);
+                $('#recipient_ref_ep_id').val(this.feature.id);
+                $('#recipient_tipoep_id').val(1);
+            };
+
+            
             /*
             * Google maps
             */
@@ -443,7 +466,7 @@
 
                                 if(result.data.supplemental.features[0] != undefined){
                                     var centroid = result.data.supplemental.features[0].properties.centroid.coordinates;
-                                    var ep_id = result.data.supplemental.features[0].id;
+                                    var ep_id = result.data.supplemental.features[0].properties.id;
                                     var id_tipo = result.data.supplemental.features[0].properties.id_tipo;
                                     //console.log(result.data.supplemental.features[0].properties.centroid.coordinates);    
 
@@ -467,23 +490,31 @@
                                         if(flagIsFeatureLayer)
                                             return true;
 
-                                        
+                                        featureLayer.clearLayers();
 
                                         var layersLoaded = featureLayerEpnuevo.getLayers();
 
+                                        //console.log(layersLoaded, 'featureLayerEpnuevo');
                                         if(layersLoaded.length > 0){
                                             for (var idx_layer in layersLoaded){
-                                                if(layersLoaded[idx_layer].feature.id == ep_id && layersLoaded[idx_layer].feature.id_tipo == id_tipo){
+                                                console.log(layersLoaded[idx_layer].feature.properties, 'featureLayerEpnuevo', ep_id, id_tipo);
+                                                if(layersLoaded[idx_layer].feature.properties.id == ep_id && layersLoaded[idx_layer].feature.properties.id_tipo == id_tipo){
                                                     layersLoaded[idx_layer].setStyle({fillColor: '#bd0026'});
+                                                    // layersLoaded[idx_layer].on('click', addEventClickLayerToOpenComplain);
                                                     break;
                                                 }
                                             }
                                         }else{
                                             featureLayerEpnuevo.setGeoJSON( result.data.supplemental );
-                                            featureLayer.eachLayer(function (layer) {
+                                            featureLayerEpnuevo.eachLayer(function (layer) {
                                                 layer.setStyle({fillColor: '#bd0026'});
+                                                layer.on('click', addEventClickLayerToOpenComplain);
+                                                layer.on('contextmenu', addEventRightClickLayerToOpenComplain);
                                             });
                                         }
+
+                                        map.addLayer(featureLayerEpnuevo);
+                                        featureLayerEpnuevo.bringToFront();
                                         
                                         return true;
                                     };
@@ -502,5 +533,6 @@
         </script>
 
         <?php echo Modules::run('complain/Complain/get_form_register', array()); ?>
+        <?php echo Modules::run('geo/Controller_Public_Space/get_form_pass_ep', array()); ?>
     </body>
 </html> 

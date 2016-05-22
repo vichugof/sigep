@@ -240,6 +240,12 @@ body {
             <div id="pano_streetview"></div>
         </div>
     </div>
+
+    <ul id="contextMenu" class="dropdown-menu" role="menu">
+        <li><a tabindex="-1" data-action="trans-to-ep" href="#">Transformar a EP</a></li>
+        <li class="divider"></li>
+        <li><a tabindex="-1" href="#">Salir</a></li>
+    </ul>
 </div>
 
 <script>
@@ -447,30 +453,37 @@ body {
 
                 featureLayerEpnuevo.setGeoJSON( result.data.supplemental );
 
-                var layers = featureLayerEpnuevo.getLayers();
-                for(var idxLayer in layers){
-                    var layer = layers[idxLayer];
+                // var layers = featureLayerEpnuevo.getLayers();
+                featureLayerEpnuevo.eachLayer(function (layer) {
+                // for(var idxLayer in layers){
+                    // var layer = layers[idxLayer];
                     layer.setStyle({fillColor: '#5B99CE'});
-                    layer.on('click', function(e){
-                                
-                        var $modal = $('#complainModal');
-                        if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.id){
-                            setDataFormComplain(layerSelectedProccessed, 0);
-                        }else{
-                            $modal.find('.modal-body input').val('');
-                            $modal.find('.modal-body textarea').val('');
-                            $modal.find('.modal-title').html('Queja EP Nuevo');
-                            $modal.find('#buttonSendMessage').html('Enviar Queja');
-                            $modal.find('.modal-footer .list-group').html('');
-                            $modal.find('.attachments-complain').html('');
-                        }
+                    // console.log( layer.feature.properties.id, layerSelectedProccessed, 'compare', 'load new ep', 'layers', layers );
+
+                    // layer.on('click', function(e){
                         
-                        $modal.modal('toggle');
-                        console.log(layer.feature);
-                        $('#recipient_ref_ep_id').val(layer.feature.id);
-                        $('#recipient_tipoep_id').val(4);
-                    });
-                }
+                        // var $modal = $('#complainModal');
+                        // if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.properties.id){
+                        //     console.log(layer.feature.properties, layerSelectedProccessed, 'retrieveNewEp', 'load new ep');
+                        //     setDataFormComplain(layerSelectedProccessed, 0);
+                        // }else{
+                        //     $modal.find('.modal-body input').val('');
+                        //     $modal.find('.modal-body textarea').val('');
+                        //     $modal.find('.modal-title').html('Queja EP Nuevo');
+                        //     $modal.find('#buttonSendMessage').html('Enviar Queja');
+                        //     $modal.find('.modal-footer .list-group').html('');
+                        //     $modal.find('.attachments-complain').html('');
+                        // }
+                        // console.log(layer.feature.properties.id, 'retrieveNewEp', 'load new ep');
+                        // $modal.modal('toggle');
+                        
+                        // $('#recipient_ref_ep_id').val(layer.feature.id);
+                        // $('#recipient_tipoep_id').val(4);
+                    // });
+
+                    layer.on('click', addEventClickNewEPToOpenComplain);
+                    layer.on('contextmenu', addEventRightClickLayerToOpenComplain);
+                });
                 
                 map.addLayer(featureLayerEpnuevo);
             }
@@ -478,6 +491,67 @@ body {
         .fail(function( jqXHR, textStatus ) {
           console.log('fail');
         });
+    }
+
+    var addEventClickNewEPToOpenComplain = function(e){
+        var $modal = $('#complainModal');
+        if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.properties.id){
+            console.log(layer.feature.properties, layerSelectedProccessed, 'retrieveNewEp', 'load new ep');
+            setDataFormComplain(layerSelectedProccessed, 0);
+        }else{
+            $modal.find('.modal-body input').val('');
+            $modal.find('.modal-body textarea').val('');
+            $modal.find('.modal-title').html('Queja EP Nuevo');
+            $modal.find('#buttonSendMessage').html('Enviar Queja');
+            $modal.find('.modal-footer .list-group').html('');
+            $modal.find('.attachments-complain').html('');
+        }
+        console.log(layer.feature.properties.id, 'retrieveNewEp', 'load new ep');
+        $modal.modal('toggle');
+        
+        $('#recipient_ref_ep_id').val(layer.feature.id);
+        $('#recipient_tipoep_id').val(4);
+    };
+
+    var addEventRightClickLayerToOpenComplain = function(e){
+        var $menu = $('#contextMenu');
+        var eventOriginLayer = e;
+        $menu
+        .show()
+        .css({
+            position: "absolute",
+            // left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
+            // top: getMenuPosition(e.clientY, 'height', 'scrollTop')
+            left: getMenuPosition(e.containerPoint.x, 'width', 'scrollLeft'),
+            top: getMenuPosition(e.containerPoint.y, 'height', 'scrollTop')
+        });
+
+        $menu
+        .off('click')
+        .on( 'click', "a", function (e) {
+            $menu.hide();
+            if( 'trans-to-ep' == $(this).data('action')){
+                console.log('layer feature', eventOriginLayer);
+                setDataFormNewEp(eventOriginLayer.target.feature);
+                var $modal = $('#newEPModal');
+                $modal.modal('toggle');    
+            }
+        });
+
+        console.log('right layer', e.containerPoint.x);
+    };
+
+    var getMenuPosition = function(mouse, direction, scrollDir) {
+        var win = $(window)[direction](),
+            scroll = $(window)[scrollDir](),
+            menu = $('#contextMenu')[direction](),
+            position = mouse + scroll;
+
+        // opening menu would pass the side of the page
+        if (mouse + menu > win && menu < mouse) 
+            position -= menu;
+        console.log(position);
+        return position
     }
 
     /*

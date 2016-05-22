@@ -13,3 +13,4 @@ composer.phar
 application/logs/
 log/
 log/*
+upload/

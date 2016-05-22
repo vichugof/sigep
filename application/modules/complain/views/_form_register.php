@@ -47,7 +47,7 @@
                 </form>
                 <div class="row">
                     <div class="col-xs-12">
-                        <h5> Anexos </h5> </span>
+                        <h5> Anexos </h5>
                     </div>
                     <div class="attachments-complain">
                         
@@ -55,15 +55,16 @@
                 </div>
             </div>
             <div class="modal-footer">
-            <div class="panel panel-default">
-              
-                <div class="panel-heading">Otras Quejas</div>
-              
-                <div class="list-group">
-                  <!-- <a href="#" class="list-group-item">
-                    <h4 class="list-group-item-heading">List group item heading</h4>
-                    <p class="list-group-item-text">...</p>
-                  </a> -->
+                <div class="panel panel-default">
+                  
+                    <div class="panel-heading">Otras Quejas</div>
+                  
+                    <div class="list-group">
+                      <!-- <a href="#" class="list-group-item">
+                        <h4 class="list-group-item-heading">List group item heading</h4>
+                        <p class="list-group-item-text">...</p>
+                      </a> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,18 +108,31 @@
                 <p class="list-group-item-text">'+data.quejas[idx_complain].fecha+'</p>\
             </a>';
 
-            if(data.quejas[idx_complain].anexos != false && data.quejas[idx_complain].anexos.length > 0){
-                for(var idx_attach = 0; idx_attach < data.quejas[idx_complain].anexos.length; idx_attach++){
-                    htmlAttachments += '\
-                    <div class="col-xs-3 col-md-2">\
-                        <a href="'+base_url_uploads+data.quejas[idx_complain].anexos[idx_attach].file_path+'" class="thumbnail" target="_blank">\
-                          <img src="'+base_url_uploads+'thumbnails/'+data.quejas[idx_complain].anexos[idx_attach].file_path+'" alt="'+data.quejas[idx_complain].anexos[idx_attach].fechacreacion+'">\
-                        </a>\
-                    </div>';
-                }
-            }
+            console.log(' Anexos ', data.quejas[idx_complain].anexos);
+
+            // if(data.quejas[idx_complain].anexos != false && data.quejas[idx_complain].anexos.length > 0){
+            //     for(var idx_attach = 0; idx_attach < data.quejas[idx_complain].anexos.length; idx_attach++){
+            //         htmlAttachments += '\
+            //         <div class="col-xs-3 col-md-2">\
+            //             <a href="'+base_url_uploads+data.quejas[idx_complain].anexos[idx_attach].file_path+'" class="thumbnail" target="_blank">\
+            //               <img src="'+base_url_uploads+'thumbnails/'+data.quejas[idx_complain].anexos[idx_attach].file_path+'" alt="'+data.quejas[idx_complain].anexos[idx_attach].fechacreacion+'">\
+            //             </a>\
+            //         </div>';
+            //     }
+            // }
         }
 
+        if(data.quejas[idx_complain_view].anexos != false && data.quejas[idx_complain_view].anexos.length > 0){
+            for(var idx_attach = 0; idx_attach < data.quejas[idx_complain_view].anexos.length; idx_attach++){
+                htmlAttachments += '\
+                <div class="col-xs-3 col-md-2">\
+                    <a href="'+base_url_uploads+data.quejas[idx_complain_view].anexos[idx_attach].file_path+'" class="thumbnail" target="_blank">\
+                      <img src="'+base_url_uploads+'thumbnails/'+data.quejas[idx_complain_view].anexos[idx_attach].file_path+'" alt="'+data.quejas[idx_complain_view].anexos[idx_attach].fechacreacion+'">\
+                    </a>\
+                </div>';
+            }
+        }
+        
         $footer.html(htmlFooter);
         $attachments.html(htmlAttachments);
         $("#buttonSendMessage").html('Modificar Queja');

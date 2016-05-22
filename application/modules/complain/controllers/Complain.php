@@ -91,6 +91,7 @@ class Complain extends CI_Controller {
             'comentario'        => $comentario, 
             'ip'                => $ip, 
             'tipoep_id'         => $tipoep_id, 
+            'estado_id'         => INICIANDO
         );
 
         if($queja_id > 0){
@@ -98,7 +99,11 @@ class Complain extends CI_Controller {
             unset($data[0]['radicado']);
             $data[0]['id'] = $queja_id;
             
-            $new_queja = $this->queja->update($data[0], $queja_id);
+            $respond = $this->queja->update($data[0], $queja_id);
+
+            if($respond){
+                $new_queja = array($queja_id);
+            }
         }else{
             $new_queja = $this->queja->insert($data);
         }

@@ -77,6 +77,13 @@ class Public_Space extends CI_Controller {
           $feature['categoria'] = $item->categoria;
           $feature['nombre'] = $item->nombre;  
         }
+
+        if($tipoep_id == 4){
+          $feature['shape_area'] = $item->shape_area;
+          $feature['barrio'] = $item->barrio;
+          $feature['barrio_nombre'] = $item->barrio_nombre;
+          $feature['comuna_nombre'] = $item->comuna_nombre;
+        }
         
         $feature['id_tipo'] = $item->idtipo;
 
@@ -295,7 +302,8 @@ class Public_Space extends CI_Controller {
         $feature['creacion'] = $item->fechacreacion;
         $feature['actualizacion'] = $item->fechaactualizacion;
         $feature['id_tipo'] = $item->idtipo;
-        $feature['comuna'] = $item->comuna;
+        $feature['comuna_nombre'] = $item->comuna_nombre;
+        $feature['barrio_nombre'] = $item->barrio_nombre;
         $feature['barrio'] = $item->barrio;
         $output_epnuevo[] = $feature;
       }
@@ -304,6 +312,32 @@ class Public_Space extends CI_Controller {
           'data'      => array(
               'success'       => 'success', 
               'supplemental'  => $this->convertToGeojson($output_epnuevo)
+          ) 
+      );
+
+      $this->output->set_content_type('application/json')
+           ->set_output( json_encode($output) );
+      return;
+    }
+
+    public function pass_to_new_ep(){
+      $recipient  = $this->input->post('recipient', TRUE);
+      $new_ep_id  = $recipient['ref-ep-id'];
+      $tipoep_id  = $recipient['tipoep-id'];
+      $escala     = $recipient['escala'];
+      $categoria  = $recipient['categoria'];
+
+      $this->load->model('Epnuevo_model', 'epnuevo');
+
+      //get the rows from ep
+      $retrieved_new_ep = $this->epnuevo->get_entry($new_ep_id);
+
+      $output = array(
+          'success'   => true,
+          'data'      => array(
+              'success'       => 'success', 
+              'supplemental'  => $retrieved_new_ep,
+              'recipient'  => $recipient
           ) 
       );
 

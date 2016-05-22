@@ -8,6 +8,7 @@ $route['geo/get_ep/centroid'] = 'Public_Space/get_ep_row';
 
 $route['geo/get_new_eps'] = 'Public_Space/get_ep_new_rows';
 $route['geo/create_ep'] = 'Public_Space/create_ep';
+$route['geo/passtoep'] = 'Public_Space/pass_to_new_ep';
 
 $route['geo'] = 'Public_Space';
 $route['geo/get_layers'] = 'Public_Space/get_eptrabajo_layers';
