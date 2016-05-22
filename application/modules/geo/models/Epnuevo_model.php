@@ -34,7 +34,7 @@ class Epnuevo_model extends CI_Model {
 
     $data = $data = array(
       'barrio' => $barrio[0]->fidbarrio, 
-      'comuna' => $barrio[0]->fidcomuna, 
+      // 'comuna' => $barrio[0]->fidcomuna, 
       'idtipo' => 4,
     );
 
@@ -50,7 +50,7 @@ class Epnuevo_model extends CI_Model {
   function get_entry($id) {
     $query =  $this
               ->db
-              ->select('epnuevo.idnuevo AS id, ST_AsGeoJSON(epnuevo.the_geom) AS geom, epnuevo.shape_area AS area, epnuevo.barrio AS barrio, epnuevo.comuna, fechaactualizacion, fechacreacion, idtipo', FALSE)
+              ->select('epnuevo.idnuevo AS id, ST_AsGeoJSON(epnuevo.the_geom) AS geom, epnuevo.shape_area AS area, epnuevo.barrio AS barrio, fechaactualizacion, fechacreacion, idtipo', FALSE)
               ->from('epnuevo')
               ->where('idnuevo = '.$id, NULL, FALSE);
         
@@ -63,8 +63,10 @@ class Epnuevo_model extends CI_Model {
         
     $query = $this  
           ->db
-          ->select('epnuevo.idnuevo AS id, ST_AsGeoJSON(epnuevo.the_geom) AS geom, epnuevo.shape_area AS area, epnuevo.barrio, epnuevo.comuna, fechaactualizacion, fechacreacion, idtipo', FALSE)
-          ->from('epnuevo');     
+          ->select('epnuevo.idnuevo AS id, ST_AsGeoJSON(epnuevo.the_geom) AS geom, epnuevo.shape_area AS area, epnuevo.barrio, barrios.barrio AS barrio_nombre, comunas.nombre AS comuna_nombre, fechaactualizacion, fechacreacion, idtipo', FALSE)
+          ->from('epnuevo')
+          ->join('barrios', 'epnuevo.barrio = barrios.fidbarrio', 'inner')
+          ->join('comunas', 'barrios.fidcomuna = comunas.fidcomuna', 'inner');
         
       return $query->get()->result();
     }
@@ -72,9 +74,13 @@ class Epnuevo_model extends CI_Model {
   function get_entry_by_id_with_centroid($id){
     $query = $this
               ->db
-              ->select('idnuevo AS id, ST_AsGeoJSON( ST_Centroid(the_geom) ) AS centroid,  ST_AsGeoJSON( the_geom) AS geom, shape_area, barrio, comuna, fechacreacion, fechaactualizacion, idtipo', FALSE)
+              ->select('epnuevo.idnuevo AS id, ST_AsGeoJSON( ST_Centroid(epnuevo.the_geom) ) AS centroid,  ST_AsGeoJSON( epnuevo.the_geom) AS geom, epnuevo.shape_area, epnuevo.barrio, barrios.barrio AS barrio_nombre, comunas.nombre AS comuna_nombre, epnuevo.fechacreacion, epnuevo.fechaactualizacion, epnuevo.idtipo', FALSE)
               ->where("epnuevo.idnuevo = ".$id, NULL, FALSE)
-              ->get('epnuevo');      
+              // ->get('epnuevo');      
+              ->from('epnuevo')
+              ->join('barrios', 'epnuevo.barrio = barrios.fidbarrio', 'inner')
+              ->join('comunas', 'barrios.fidcomuna = comunas.fidcomuna', 'inner')
+              ->get();
 
     return $query->result();
 
