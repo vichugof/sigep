@@ -254,6 +254,8 @@
                                 )
             addLayer(geojsonEpriorizado, 'EP priorizado', 3);
 
+            addLayer(geojsonEpriorizado, 'EP propueso', 4);
+
             map.on('moveend', function() {
                 if (map.getZoom() > 15) {
                     retrieveEp();
@@ -310,25 +312,6 @@
                         featureLayer.setGeoJSON( result.data.supplemental );
                         featureLayer.eachLayer(function (layer) {
 
-                            // layer.on('click', function(e){
-                                
-                            //     var $modal = $('#complainModal');
-                            //     if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.id){
-                            //         setDataFormComplain(layerSelectedProccessed, 0);
-                            //     }else{
-                            //         $modal.find('.modal-body input').val('');
-                            //         $modal.find('.modal-body textarea').val('');
-                            //         $modal.find('.modal-title').html('Queja');
-                            //         $modal.find('#buttonSendMessage').html('Enviar Queja');
-                            //         $modal.find('.modal-footer .list-group').html('');
-                            //         $modal.find('.attachments-complain').html('');
-                            //     }
-                                
-                            //     $modal.modal('toggle');
-                            //     console.log(layer.feature);
-                            //     $('#recipient_ref_ep_id').val(layer.feature.id);
-                            //     $('#recipient_tipoep_id').val(1);
-                            // });
                             layer.on('click', addEventClickLayerToOpenComplain);
                             
                         });
@@ -361,7 +344,7 @@
                 $modal.modal('toggle');
                 console.log(this.feature);
                 $('#recipient_ref_ep_id').val(this.feature.id);
-                $('#recipient_tipoep_id').val(1);
+                $('#recipient_tipoep_id').val(this.feature.properties.id_tipo);
             };
 
             
@@ -439,6 +422,11 @@
             }
 
             $(function() {
+
+                var hideFlashes = setTimeout(function(){
+                    $('.flashdata').hide('slow');
+                }, 60000);
+
                 $('#complainModal').modal({
                   keyboard: true,
                   show: false
@@ -477,15 +465,23 @@
                                     var modified_layer = setTimeout(function(){ change_layer(); }, 700);
 
                                     var change_layer = function(){
-                                        var layersLoaded = featureLayer.getLayers();
+                                        // var layersLoaded = featureLayer.getLayers();
                                         var flagIsFeatureLayer = false;
-                                        for (var idx_layer in layersLoaded){
-                                            if(layersLoaded[idx_layer].feature.id == ep_id && layersLoaded[idx_layer].feature.id_tipo == id_tipo){
-                                                layersLoaded[idx_layer].setStyle({fillColor: '#bd0026'});
+                                        // for (var idx_layer in layersLoaded){
+                                        //     if(layersLoaded[idx_layer].feature.id == ep_id && layersLoaded[idx_layer].feature.id_tipo == id_tipo){
+                                        //         layersLoaded[idx_layer].setStyle({fillColor: '#bd0026'});
+                                        //         flagIsFeatureLayer = true;
+                                        //         break;
+                                        //     }
+                                        // }
+
+                                        featureLayer.eachLayer(function (layer){
+                                            if(layer.feature.properties.id == ep_id && layer.feature.properties.id_tipo == id_tipo) {
+                                                layer.setStyle({fillColor: '#bd0026'});
                                                 flagIsFeatureLayer = true;
-                                                break;
+                                                return true;
                                             }
-                                        }
+                                        });
 
                                         if(flagIsFeatureLayer)
                                             return true;
@@ -494,13 +490,11 @@
 
                                         var layersLoaded = featureLayerEpnuevo.getLayers();
 
-                                        //console.log(layersLoaded, 'featureLayerEpnuevo');
                                         if(layersLoaded.length > 0){
                                             for (var idx_layer in layersLoaded){
                                                 console.log(layersLoaded[idx_layer].feature.properties, 'featureLayerEpnuevo', ep_id, id_tipo);
                                                 if(layersLoaded[idx_layer].feature.properties.id == ep_id && layersLoaded[idx_layer].feature.properties.id_tipo == id_tipo){
                                                     layersLoaded[idx_layer].setStyle({fillColor: '#bd0026'});
-                                                    // layersLoaded[idx_layer].on('click', addEventClickLayerToOpenComplain);
                                                     break;
                                                 }
                                             }
@@ -534,5 +528,6 @@
 
         <?php echo Modules::run('complain/Complain/get_form_register', array()); ?>
         <?php echo Modules::run('geo/Controller_Public_Space/get_form_pass_ep', array()); ?>
+        <?php echo Modules::run('geo/Controller_Public_Space/get_flash_section', array()); ?>
     </body>
 </html> 

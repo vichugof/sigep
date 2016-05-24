@@ -189,6 +189,13 @@ body {
 .menu-ui a.active:hover {
     background:#CCCCCC; /*gris claro*/
 }
+
+.flashdata{
+    position: absolute;
+    top: 50px;
+    right: 20%;
+    z-index: 1205;
+}
 /*Fin creacion menu*/  
 
 </style>
@@ -203,11 +210,11 @@ body {
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="#">Sig EP</a>
-            <a class="navbar-brand" id="menu_tootle_nav" href="#">Cerrar/Abrir Panel Izquierdo</a>
+            <a class="navbar-brand" id="menu_tootle_nav" href="#">Cerrar/Abrir Menú</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Perfil</a></li>
+                <li><a href="#">Ingresar al sistema</a></li>
                 <li><a href="#">Ayuda</a></li>
             </ul>
             <form class="navbar-form navbar-right">
@@ -223,10 +230,11 @@ body {
                 <!-- <li class="active" id="menu_tootle"><a href="#">Cerrar Panel <span class="sr-only">(current)</span></a></li> -->
                 <li><a href="#" id="create_new_ep"> Crear Nuevo Espacio </a></li>
                 <li><a href="#" id="view_new_ep"> Ver Nuevo Espacio </a></li>
-                <!-- <li><a href="#">Reports</a></li>
-                <li><a href="#">Analytics</a></li>
-                <li><a href="#">Export</a></li> -->
             </ul>
+            <?php //if( logged_in() ): ?>
+            <?php if( FALSE ): ?>
+                <pre>LOGGED IN!!!</pre>
+            <?php endif; ?>
             <ul class="nav nav-sidebar">
                 <li><a href="#" id="view_new_ep"> Listado Quejas Recientes </a></li>
                 <?php echo Modules::run('complain/Complain/get_list', $quejas); ?>
@@ -250,6 +258,7 @@ body {
 
 <script>
     // Add map
+    var setDataFormNewEp ;
     L.mapbox.accessToken = 'pk.eyJ1IjoieWVyb3Rhem1hMDMiLCJhIjoiY2lqMW4wNWl5MDBic3VhbHo0ZmMyZzQxOSJ9.zMzfDxxgOHUEDSV58s7o1Q';
 
     var map = L.mapbox.map('spacepublic', 'mapbox.streets', { zoomControl: false })
@@ -327,12 +336,12 @@ body {
     /*
     * TEMPORAL
     */
-    var link = document.createElement('a');
-            link.href = '#';
-            link.className = '';
-            link.innerHTML = 'EP Propuesto';
+    // var link = document.createElement('a');
+    //         link.href = '#';
+    //         link.className = '';
+    //         link.innerHTML = 'EP Propuesto';
 
-    layers.appendChild(link);
+    // layers.appendChild(link);
 
     /*
     * TEMPORAL
@@ -453,34 +462,9 @@ body {
 
                 featureLayerEpnuevo.setGeoJSON( result.data.supplemental );
 
-                // var layers = featureLayerEpnuevo.getLayers();
                 featureLayerEpnuevo.eachLayer(function (layer) {
-                // for(var idxLayer in layers){
-                    // var layer = layers[idxLayer];
-                    layer.setStyle({fillColor: '#5B99CE'});
-                    // console.log( layer.feature.properties.id, layerSelectedProccessed, 'compare', 'load new ep', 'layers', layers );
-
-                    // layer.on('click', function(e){
-                        
-                        // var $modal = $('#complainModal');
-                        // if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.properties.id){
-                        //     console.log(layer.feature.properties, layerSelectedProccessed, 'retrieveNewEp', 'load new ep');
-                        //     setDataFormComplain(layerSelectedProccessed, 0);
-                        // }else{
-                        //     $modal.find('.modal-body input').val('');
-                        //     $modal.find('.modal-body textarea').val('');
-                        //     $modal.find('.modal-title').html('Queja EP Nuevo');
-                        //     $modal.find('#buttonSendMessage').html('Enviar Queja');
-                        //     $modal.find('.modal-footer .list-group').html('');
-                        //     $modal.find('.attachments-complain').html('');
-                        // }
-                        // console.log(layer.feature.properties.id, 'retrieveNewEp', 'load new ep');
-                        // $modal.modal('toggle');
-                        
-                        // $('#recipient_ref_ep_id').val(layer.feature.id);
-                        // $('#recipient_tipoep_id').val(4);
-                    // });
-
+                
+                    layer.setStyle({fillColor: '#5B99CE'});        
                     layer.on('click', addEventClickNewEPToOpenComplain);
                     layer.on('contextmenu', addEventRightClickLayerToOpenComplain);
                 });
@@ -495,8 +479,8 @@ body {
 
     var addEventClickNewEPToOpenComplain = function(e){
         var $modal = $('#complainModal');
-        if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == layer.feature.properties.id){
-            console.log(layer.feature.properties, layerSelectedProccessed, 'retrieveNewEp', 'load new ep');
+        if(layerSelectedProccessed != undefined && layerSelectedProccessed.id == this.feature.properties.id){
+            console.log(this.feature.properties, layerSelectedProccessed, 'retrieveNewEp', 'load new ep');
             setDataFormComplain(layerSelectedProccessed, 0);
         }else{
             $modal.find('.modal-body input').val('');
@@ -506,10 +490,10 @@ body {
             $modal.find('.modal-footer .list-group').html('');
             $modal.find('.attachments-complain').html('');
         }
-        console.log(layer.feature.properties.id, 'retrieveNewEp', 'load new ep');
+        console.log(this.feature.properties.id, 'retrieveNewEp', 'load new ep');
         $modal.modal('toggle');
         
-        $('#recipient_ref_ep_id').val(layer.feature.id);
+        $('#recipient_ref_ep_id').val(this.feature.id);
         $('#recipient_tipoep_id').val(4);
     };
 
@@ -520,8 +504,6 @@ body {
         .show()
         .css({
             position: "absolute",
-            // left: getMenuPosition(e.clientX, 'width', 'scrollLeft'),
-            // top: getMenuPosition(e.clientY, 'height', 'scrollTop')
             left: getMenuPosition(e.containerPoint.x, 'width', 'scrollLeft'),
             top: getMenuPosition(e.containerPoint.y, 'height', 'scrollTop')
         });

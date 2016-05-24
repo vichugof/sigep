@@ -66,11 +66,42 @@ class Controller_Public_Space extends CI_Controller {
     //     return $result;
     // }
 
-    function get_form_pass_ep($parameters = array()){
-         $this->load->view( '_form_pass_ep',
+    public function get_form_pass_ep($parameters = array()){
+        $this->load->view( '_form_pass_ep',
 
            array(
                'parameters' => $parameters,
+           )
+       );
+    }
+
+    public function get_flash_section(){
+        $this->load->library('session');
+        $flashdata = $this->session->flashdata();
+
+        $css_class = NULL;
+        $message = NULL;
+
+        if(isset($flashdata['success_msg'])){
+            $message = $flashdata['success_msg'];
+            $css_class = 'success';
+        }
+        if(isset($flashdata['error_msg'])){
+            $message = $flashdata['error_msg'];
+            $css_class = 'danger';
+        }
+        if(isset($flashdata['info_msg'])){
+            $message = $flashdata['info_msg'];
+            $css_class = 'info';
+        }
+        // $message = 'Todo very good Todo very good Todo very good Todo very good';
+        // $css_class = 'danger';
+        $this->load->view( '_flash_section',
+
+           array(
+               'flashdata' => $flashdata,
+               'message' => $message,
+               'css_class' => $css_class
            )
        );
     }

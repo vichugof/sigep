@@ -45,14 +45,14 @@
                         <label for="recipient_escala" class="col-sm-2 control-label">Escala:</label>
                         <div class="col-sm-10">
                             <input type="text" required name="recipient[escala]" class="form-control" id="recipient_escala" value="">
-                            <span id="helpBlock2" class="help-block">A block of help text that breaks onto a new line and may extend beyond one line.</span>
+                            <span id="helpBlock2" class="help-block">Referente a la escala geográfica de la información obtenida. Ej: Local, regional.</span>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="recipient_categoria" class="col-sm-2 control-label">Categoria:</label>
                         <div class="col-sm-10">
                             <input type="text" required name="recipient[categoria]" class="form-control" id="recipient_categoria" value="">
-                            <span id="helpBlock2" class="help-block">A block of help text that breaks onto a new line and may extend beyond one line.</span>
+                            <span id="helpBlock2" class="help-block">Referente al uso del predio. Ej: Zona verde, parque.</span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -72,7 +72,7 @@
 </div>
 
 <script type="text/javascript">
-    var setDataFormNewEp = function(data){
+    setDataFormNewEp = function(data){
 
         $('#newEPModal').find('#recipient_ref_ep_id').val(data.properties.id);
         $('#newEPModal').find('#recipient_tipoep_id').val(data.properties.id_tipo);
@@ -87,7 +87,9 @@
     };
 
     $(function() {
-        $('#formNewEP').on('submit', function(event){
+        var $form = $('#formNewEP');
+        var $modal = $('#newEPModal');
+        $form.on('submit', function(event){
             event.preventDefault();
             $.ajax({
                 url: base_url+'index.php/geo/passtoep',    
@@ -99,6 +101,9 @@
 
                 if(result.success == true && result.data.success == 'success'){
                     console.log(result.data.supplemental);
+                    var centroid = result.data.supplemental.features[0].properties.centroid.coordinates;
+                    map.setView([centroid[1], centroid[0]], 17);
+                    $modal.modal('toggle');
                 }
             })
             .fail(function( jqXHR, textStatus ) {

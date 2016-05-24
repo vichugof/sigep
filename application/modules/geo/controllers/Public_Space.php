@@ -1,6 +1,11 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
  
 class Public_Space extends CI_Controller {
+
+    public function __construct(){
+        parent::__construct();
+    }
+
     public function index()
     {
         $this->load->view('public_space_index');
@@ -31,11 +36,15 @@ class Public_Space extends CI_Controller {
     }
 
     public function create_ep(){
+      $this->load->library('session');
+      $session_data = $this->session->userdata();
+      $user_id = $session_data['__ci_last_regenerate'];
 
       $layers = $this->input->post('layers', TRUE);
-      $this->load->model('Epnuevo_model', 'epnuevo');   
+      $this->load->model('Epnuevo_model', 'epnuevo');
+      $result = array();
       foreach ($layers as $layer) {
-        $result = $this->epnuevo->new_entries($layer);
+        $result = $this->epnuevo->new_entries($layer, $user_id);
       }
 
       $output = array(
@@ -167,6 +176,7 @@ class Public_Space extends CI_Controller {
     public function get_eptrabajo_layers(){
 
       $this->load->helper('text');
+      // $this->load->library('ion_auth');
       $base_url_uploads = 'http://localhost/~vichugof/sigep/upload/';
       $base_url = base_url();
       $this->load->model('Barrio_model', 'Barrio');
@@ -290,8 +300,11 @@ class Public_Space extends CI_Controller {
       //load the model
       $this->load->model('Epnuevo_model', 'epnuevo');
 
+      $this->load->library('session');
+      $session_data = $this->session->userdata();
+      $user_id = $session_data['__ci_last_regenerate'];
       //get the rows from ep
-      $result = $this->epnuevo->get_entries();
+      $result = $this->epnuevo->get_entries($user_id);
       $output_epnuevo = array();
       
       foreach ($result as $item) {
@@ -328,16 +341,40 @@ class Public_Space extends CI_Controller {
       $categoria  = $recipient['categoria'];
 
       $this->load->model('Epnuevo_model', 'epnuevo');
+      $this->load->model('Ep_model', 'ep');
 
       //get the rows from ep
       $retrieved_new_ep = $this->epnuevo->get_entry($new_ep_id);
+
+      $ep_id = $this->epnuevo->transforma_ep($retrieved_new_ep[0]->id, $categoria, $escala);
+
+      $result = $this->ep->get_entry_by_id_with_centroid($ep_id);
+
+      $output_trans_ep = array();
+      
+      foreach ($result as $item) {
+        $feature = array();
+        $feature['id'] = $item->id;
+        $feature['the_geom'] = (array)json_decode($item->geom);
+        $feature['centroid'] = (array)json_decode($item->centroid);
+        $feature['fuente'] = $item->fuente;
+        $feature['categoria'] = $item->categoria;
+        $feature['nombre'] = $item->nombre;
+        $feature['escala'] = $item->escala;
+        $feature['shape_area'] = $item->shape_area;
+        $feature['creacion'] = $item->fechacreacion;
+        $feature['actualizacion'] = $item->fechaactualizacion;
+        $feature['id_tipo'] = $item->idtipo;
+        $feature['comuna'] = $item->comuna;
+        $feature['barrio'] = $item->barrio;
+        $output_trans_ep[] = $feature;
+      }
 
       $output = array(
           'success'   => true,
           'data'      => array(
               'success'       => 'success', 
-              'supplemental'  => $retrieved_new_ep,
-              'recipient'  => $recipient
+              'supplemental'  => $this->convertToGeojson($output_trans_ep),
           ) 
       );
 

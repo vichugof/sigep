@@ -4,6 +4,7 @@ class Complain extends CI_Controller {
 
     function __construct(){
         parent::__construct();
+        // $this->load->library('session');
         // $this->load->model('Queja_model', 'queja');
         // $this->load->model('Anexosep_model', 'anexos');
     }
@@ -80,6 +81,7 @@ class Complain extends CI_Controller {
         $radicado           = uniqid().time();
         $comentario         = $this->input->post('recipient-message-text');
         $tipoep_id          = $this->input->post('recipient-tipoep-id');;
+        $estado_id          = $this->input->post('recipient-estado-id');;
         $ip                 = $this->input->ip_address();
 
         $data[] = array(
@@ -91,7 +93,7 @@ class Complain extends CI_Controller {
             'comentario'        => $comentario, 
             'ip'                => $ip, 
             'tipoep_id'         => $tipoep_id, 
-            'estado_id'         => INICIANDO
+            'estado_id'         => ($estado_id > 0) ? $estado_id : INICIANDO
         );
 
         if($queja_id > 0){
@@ -111,16 +113,25 @@ class Complain extends CI_Controller {
 
         $data_uploaded = $this->_upload($user_id, $new_queja);
 
-        $output = array(
-            'success'   => true,
-            'data'      => array(
-                'success'       => 'success', 
-                'supplemental'  => array('files' => $_FILES, 'user_id' => $user_id, 'data_uploaded' => $data_uploaded)
-            ) 
-        );
+        // $output = array(
+        //     'success'   => true,
+        //     'data'      => array(
+        //         'success'       => 'success', 
+        //         'supplemental'  => array('files' => $_FILES, 'user_id' => $user_id, 'data_uploaded' => $data_uploaded)
+        //     ) 
+        // );
 
-        $this->output->set_content_type('application/json')
-             ->set_output( json_encode($output) );
+        // $this->output->set_content_type('application/json')
+        //      ->set_output( json_encode($output) );
+
+        if(!isset($data_uploaded['upload_errors'])){
+            if( !($queja_id > 0) )
+                $this->session->set_flashdata('success_msg', 'La queja ha sido creada con el siguiente NÚMERO DE RADICADO: '.$radicado);
+            else
+                $this->session->set_flashdata('success_msg', 'La ha queja sido modificada, NÚMERO DE RADICADO: '.$radicado);
+        }
+
+        redirect('index.php/geo/get_layers');
 
         return;
     }

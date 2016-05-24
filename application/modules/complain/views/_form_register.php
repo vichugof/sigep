@@ -35,6 +35,18 @@
                         <textarea class="form-control" name="recipient-message-text" id="recipient_message_text" value="" required></textarea>
                     </div>
                     <div class="form-group">
+                        <label for="message-text" class="control-label">Estado:</label>
+                        <select class="form-control" name="recipient-estado-id" id="recipient_estado" value="" required>
+                            <option value="1"> SIN PROCESAR</option>
+                            <option value="2"> EN TRÁMITE</option>
+                            <option value="3"> FINALIZADO</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message-text" class="control-label">Respuesta:</label>
+                        <textarea class="form-control" name="recipient-respuesta-text" id="recipient_respuesta_text" value="" required></textarea>
+                    </div>
+                    <div class="form-group">
                         <label for="message-text" class="control-label">Documentos:</label>
                         <input type="file" name="recipient-uploadedimages[]" id="recipient_uploadedimages" multiple/>
                         <span id="helpBlock" class="help-block">Nota: Suportado formatos como: .jpeg, .jpg, .png, .gif y .pdf</span>
@@ -88,6 +100,8 @@
         $('#recipient_name').val(data.quejas[idx_complain_view].solicitante);
         $('#recipient_email').val(data.quejas[idx_complain_view].solicitante_email);
         $('#recipient_message_text').val(data.quejas[idx_complain_view].comentario);
+        $('#recipient_estado').val(data.quejas[idx_complain_view].estado_id);
+        $('#recipient_respuesta_text').val(data.quejas[idx_complain_view].respuesta);
 
         var $footer      = $('#complainModal .modal-footer .list-group');
         var $attachments = $('#complainModal .attachments-complain');
