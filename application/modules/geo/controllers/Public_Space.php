@@ -6,6 +6,11 @@ class Public_Space extends CI_Controller {
         $this->load->view('public_space_index');
     }
 
+    public function inicio()
+    {
+        $this->load->view('inicio');
+    }
+
     public function view_ep(){
       $ep_id = $this->input->post('ep_id', TRUE);
       $tipoep_id = $this->input->post('tipoep_id', TRUE);
@@ -32,17 +37,23 @@ class Public_Space extends CI_Controller {
 
     public function create_ep(){
 
+      $this->load->library('session');
+     
+      $session_data = $this->session->userdata();
+      // $user_id = $session_data['__ci_last_regenerate'];
+      $user_id = session_id();// dev windows
+
       $layers = $this->input->post('layers', TRUE);
       $this->load->model('Epnuevo_model', 'epnuevo');   
       foreach ($layers as $layer) {
-        $result = $this->epnuevo->new_entries($layer);
+        $result = $this->epnuevo->new_entries($layer, $user_id);
       }
-
-      $output = array(
+     
+      $output = array (         
           'success'   => true,
           'data'      => array(
-              'success'       => 'success', 
-              'supplemental'  => $result
+            'success'       => 'success', 
+            'supplemental'  => $result
           ) 
       );
       $this->output->set_content_type('application/json')
@@ -106,73 +117,18 @@ class Public_Space extends CI_Controller {
       return;
     }
 
-    // public function get_layers(){
-/*    public function get_epriorizado_layers(){
-
-
-        $this->load->model('Eppriorizado_model', 'eppriorizado');
-        $this->load->model('Ep_model', 'ep');
-
-        // $result = $this->eppriorizado->get_last_ten_entries();
-        $result = $this->eppriorizado->get_entries();
-
-
-        $output_epriorizado = array();
-        //echo "<pre>"; print_r($result); echo "</pre>"; 
-        foreach ($result as $item) {
-            //$wkb = pg_unescape_bytea($item['geom']); // Make sure to unescape the hex blob
-            //$wkb = pg_unescape_bytea($item->geom); // Make sure to unescape the hex blob
-            //$geom = geoPHP::load($wkb, 'ewkb'); // We now a full geoPHP Geometry object
-
-            //$output[] = pg_escape_bytea($geom->out('ewkb'));
-            //$output[]['geom'] = pg_escape_bytea($geom->out('geojson'));
-            $feature = array();
-            $feature['id'] = $item->id;
-            $feature['geom'] = (array)json_decode($item->geom);
-            $feature['shape_area'] = $item->shape_area;
-            // $feature['cod_barrio'] = $item->cod_barrio;
-            $feature['nombre'] = $item->nombre;
-            $output_epriorizado[] = $feature;
-        }
-
-        // $result = $this->ep->get_entries();
-
-        // $output_ep = array();
-
-        // foreach ($result as $item) {
-
-        //     $feature = array();
-        //     $feature['id'] = $item->id;
-        //     $feature['geom'] = (array)json_decode($item->geom);
-        //     $feature['fuente'] = $item->fuente;
-        //     $feature['categoria'] = $item->categoria;
-        //     $feature['nombre'] = $item->nombre;
-        //     $output_ep[] = $feature;
-        // }
-
-        $this->load->view( 'eppriorizado_layer_json', 
-            array(
-                    'geojsonepriorizado' => $this->convertToGeojson($output_epriorizado),
-                    // 'geojsonep' => $this->convertToGeojson($output_ep),
-            ) 
-        );
-    }*/
-
     public function get_eptrabajo_layers(){
 
       $this->load->helper('text');
       $base_url_uploads = base_url('/sigep/upload/');
       $base_url = base_url('public');
       $this->load->model('Barrio_model', 'Barrio');
-      $this->load->model('Comuna_model', 'Comuna');
-       
-     
+          
       $result = $this->Barrio->get_entries();    
       $output_barrios = array();
              
       foreach ($result as $item) {
         $feature = array();
-        //$feature['id'] = $item->id;
         $feature['id'] = $item->id;
         $feature['the_geom'] = (array)json_decode($item->geom);
         $feature['nombre'] = $item->nombre;
@@ -185,11 +141,11 @@ class Public_Space extends CI_Controller {
         $output_barrios[] = $feature;
       }
 
+      $this->load->model('Comuna_model', 'Comuna');
       $result = $this->Comuna->get_entries();
       $output_comunas = array();
 
       foreach ($result as $item) {
-
         $feature = array();
         $feature['id'] = $item->id;
         $feature['the_geom'] = (array)json_decode($item->geom);
@@ -197,9 +153,9 @@ class Public_Space extends CI_Controller {
         $feature['area'] = $item->area;
         $feature['perimetro'] = $item->perimetro;
         $feature['comuna'] = $item->comuna;
-        $feature['color'] = '#006633';
+        $feature['color'] = '#663300';
         $feature['outline_style'] = 'solid';
-        $feature['border_color'] = '#006633';
+        $feature['border_color'] = '#663300';
         $output_comunas[] = $feature;
       }
 
@@ -221,21 +177,18 @@ class Public_Space extends CI_Controller {
         $feature['shape_area'] = $item->shape_area;
         $feature['id_tipo'] = $item->idtipo;
         $feature['nombre'] = $item->nombre;
-        $feature['color'] = '#CC0000';
+        $feature['color'] = '#006633';
         $feature['outline_style'] = 'solid';
-        $feature['border_color'] = '#CC0000';
+        $feature['border_color'] = '#006633';
         $output_epriorizado[] = $feature;
       }
 
 
-       $this->load->model('Eppropuesto_model', 'eppropuesto');
-
+      $this->load->model('Eppropuesto_model', 'eppropuesto');
       $result = $this->eppropuesto->get_entries();
-
       $output_epropuesto = array();
 
       foreach ($result as $item) {
-
         $feature = array();
         $feature['id'] = $item->id;
         $feature['the_geom'] = (array)json_decode($item->the_geom);        
@@ -306,12 +259,30 @@ class Public_Space extends CI_Controller {
       return;
     }
 
+    function sin_queja_epnew(){
+      
+      $this->load->model('Epnuevo_model', 'epnuevo');
+
+      $fecha_actual = date('Y-m-d H:i:s', time());
+
+      $result = $this->epnuevo->sin_queja($fecha_actual);
+      $output_epnuevo = array();
+  
+      $this->output->set_content_type('application/json')
+           ->set_output( json_encode($output) );
+      return;
+    }
+
     function get_ep_new_rows(){
       //load the model
       $this->load->model('Epnuevo_model', 'epnuevo');
+      $this->load->library('session');
+      $session_data = $this->session->userdata();
+      // $user_id = $session_data['__ci_last_regenerate'];
+      $user_id = session_id();// dev windows
 
       //get the rows from ep
-      $result = $this->epnuevo->get_entries();
+      $result = $this->epnuevo->get_entries($user_id);
       $output_epnuevo = array();
       
       foreach ($result as $item) {
@@ -322,7 +293,6 @@ class Public_Space extends CI_Controller {
         $feature['creacion'] = $item->fechacreacion;
         $feature['actualizacion'] = $item->fechaactualizacion;
         $feature['id_tipo'] = $item->idtipo;
-        $feature['comuna'] = $item->comuna;
         $feature['barrio'] = $item->barrio;
         $output_epnuevo[] = $feature;
       }

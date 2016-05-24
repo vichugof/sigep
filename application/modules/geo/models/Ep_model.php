@@ -16,6 +16,7 @@ class Ep_model extends CI_Model {
     * @param Float $lon Longitude
     * @param Int $radius radius to query, the measure is meter
     */
+      
 
     function get_entries_by_id($ep_id){
         $query = $this

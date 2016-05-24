@@ -43,45 +43,51 @@
 
             function style(feature) {
                 return {
-                    // fillColor: '#df65b0',
+                  
                     fillColor: feature.properties.color,
-                    weight: 2,
-                    opacity: 1,
-                    //color: 'white',
-                    color: 'black',
+                    weight: 1,
+                    opacity: 0.8,
+                    color: feature.properties.color,
                     dashArray: '3',
-                    // fillOpacity: 0.8
-                    fillOpacity: 0.1
+                    //fillOpacity: 0
+
+
                 };
             }
 
+             /*
+            * ---------------------------------------------------------
+            * Barrio
+            * ---------------------------------------------------------
+            */    
             function highlightFeature(e) {
-                var layer = e.target;
+                var layerBarrio = e.target;
 
-                layer.setStyle({
+                layerBarrio.setStyle({
+
                     weight: 3,
-                    color: '#5D4C59',
+                    color: '#6C706F',
                     dashArray: '',
-                    fillOpacity: 0.7
+                    Opacity: 0.2,
+                    fillOpacity: 0.2
+
                 });
 
                 if (!L.Browser.ie && !L.Browser.opera) {
-                    layer.bringToFront();
+                    layerBarrio.bringToFront();
                 }
                 
-                info.update(layer.feature.properties);
+                info.update(layerBarrio.feature.properties);
             }
 
             function resetHighlight(e) {
-                // geojsonEpriorizado.resetStyle(e.target);
                 geojsonBarrio.resetStyle(e.target);
-                //geojsonbarrio.resetStyle(e.target);
                 info.update();
             }
 
             function zoomToFeature(e) {
                 //console.log(e.containerPoint.toString() + ', ' + e.latlng.toString(), e.latlng.lat, e.latlng.lng);
-                map.fitBounds(e.target.getBounds());
+                // map.fitBounds(e.target.getBounds());
                 countryClicked = true;
                 updateStreetView(e);
             };
@@ -110,7 +116,7 @@
                 
                 layerComuna.setStyle({
                     weight: 4,
-                    color: '#006633',
+                    color: '#663300',
                     dashArray: '',
                     Opacity: 1.0,
                     //fillOpacity: 0.1
@@ -155,7 +161,7 @@
                 
                 layerEpriorizado.setStyle({
                     weight: 3,
-                    color: '#CC0000',
+                    color: '#006633',
                     dashArray: '',
                     Opacity: 1.0,
                     fillOpacity: 0.1
@@ -191,12 +197,7 @@
             * ---------------------------------------------------------
             */
 
-            function zoomToFeatureEpropuesto(e) {
-                
-                countryClicked = true;
-                updateStreetView(e);
-            };
-
+            
             function highlightFeatureEpropuesto(e) {
                 var layerEpropuesto = e.target;
                 
@@ -222,6 +223,12 @@
                 geojsonEpropuesto.resetStyle(e.target);
                 
                 info.update();
+            };
+
+            function zoomToFeatureEpropuesto(e) {
+                
+                countryClicked = true;
+                updateStreetView(e);
             };
 
             function onEachFeatureEpropuesto(feature, layer) {
@@ -371,7 +378,7 @@
                                 }else{
                                     $modal.find('.modal-body input').val('');
                                     $modal.find('.modal-body textarea').val('');
-                                    $modal.find('.modal-title').html('Queja');
+                                    $modal.find('.modal-title').html('Reporte de Inconsistencias en Espacio Público');
                                     $modal.find('#buttonSendMessage').html('Enviar Queja');
                                     $modal.find('.modal-footer .list-group').html('');
                                     $modal.find('.attachments-complain').html('');

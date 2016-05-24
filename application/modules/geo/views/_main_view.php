@@ -189,6 +189,11 @@ body {
 .menu-ui a.active:hover {
     background:#CCCCCC; /*gris claro*/
 }
+
+.nav.nav-sidebar{
+    padding-left: 12px;
+    padding-right: 10px;
+}
 /*Fin creacion menu*/  
 
 </style>
@@ -202,12 +207,12 @@ body {
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Sig EP</a>
-            <a class="navbar-brand" id="menu_tootle_nav" href="#">Cerrar/Abrir Panel Izquierdo</a>
+            <a class="navbar-brand" href="#"><b>Sig EP</b></a>
+            <a class="navbar-brand" id="menu_tootle_nav" href="#">Cerrar/Abrir Menú</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Perfil</a></li>
+                <li><a href="#"><b>Ingresar al sistema</b></a></li>
                 <li><a href="#">Ayuda</a></li>
             </ul>
             <form class="navbar-form navbar-right">
@@ -216,21 +221,65 @@ body {
         </div>
     </div>
 </nav>
+
 <div class="container-fluid">
     <div class="row">
+
         <div id="wrapper_sidebar" class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
+                   
+            <ul class="nav nav-sidebar" >
+
                 <!-- <li class="active" id="menu_tootle"><a href="#">Cerrar Panel <span class="sr-only">(current)</span></a></li> -->
-                <li><a href="#" id="create_new_ep"> Crear Nuevo Espacio </a></li>
-                <li><a href="#" id="view_new_ep"> Ver Nuevo Espacio </a></li>
+                <!-- <li><a href="#" id="create_new_ep"> Crear EP Nuevo </a></li> -->
+                <!-- <li><a href="#" id="view_new_ep"> Ver Nuevo Espacio </a></li> -->
                 <!-- <li><a href="#">Reports</a></li>
                 <li><a href="#">Analytics</a></li>
                 <li><a href="#">Export</a></li> -->
-            </ul>
-            <ul class="nav nav-sidebar">
+
+                <h4><b>  Control de Espacio Público </b></h4> 
+                                                
+                          <h5>
+                            <a href="javascript:void(0);" onclick="window.open('http://localhost/sigep/public/index.php/geo/inicio', 'popup', 'left=190, top=100, width=400, height=500, toolbar=0,  resizable=1')">Inicio</a>
+                          </h5>                                                 
+
+                            <li> <h4><b>  Enlaces de Interés </b></h4>
+                                <ul>   
+                                  
+                                        <li> <a href="http://www.cali.gov.co/  gobierno/publicaciones/rea_espacio_pblico_pub"> ¿Qué es EP? </a></li>        
+                                        <li> <a href="http://www.cali.gov.co/loader.php?lServicio=FAQ&lFuncion=viewPreguntas&id=83"> Reglamentación en EP </a></li>
+                                        <li > <a href="http://idesc.cali.gov.co/download/guias/manual_mecep.pdf"> Manual de Elementos Constitutivos del EP </a></li> 
+                                        <li> <a href="https://www.minambiente.gov.co/images/AsuntosambientalesySectorialyUrbana/pdf/Gestion_urbana/espacio_publico/CONPES_3718_de_2012_-_Pol%C3%ADtica_Nacional_de_Espacio_P%C3%BAblico.pdf"> Política Nacional de Espacio Público </a></li> 
+                                        <li> <a href="http://www.cali.gov.co/publicaciones/documentos_de_la_propuesta_de_revisin_y_ajuste_del_pot_de_cali_2013_pub"> POT 2014 </a></li>
+                                        <li> <a href="http://www.cali.gov.co/publicaciones/propuestas_tematicas_del_pot_pub"> Propuesta Mejoramiento EP </a></li>        
+                                        
+                                </ul>
+                            </li>
+
+                            <li><h4><b> Contáctos</b></h4>
+                                    <ul>
+                                        <p>  Dependencias</p>
+                                        <li><a href="http://www.cali.gov.co/planeacion/"> Planeación </a></li>
+                                        <li><a href="http://www.cali.gov.co/dagma/"> DAGMA </a></li>
+                                        <br>
+                                        <p> Entidades Asociadas</p>
+                                        <li><a href="http://www.emcali.com.co/"> EMCALI</a></li>
+                                        <li><a href="http://www.metrocali.gov.co/cms/"> MetroCali</a></li>
+                                        <li><a href="http://www.emru.gov.co/"> EMRU</a></li>
+
+                                    </ul>
+                            </li>
+
+                            <h4> <b>Radique su solicitud </b></h4>
+                            <p style="text-align: justify; margin-right: 0.7em;">Genere su queja al dar clic sobre los polígonos de EP actuales o sobre el poligono de EP creado por usted por motivos de la queja.</p>
+                            <li><a href="#" id="create_new_ep"> Crear EP Nuevo </a></li>
+                            
+         
+            </ul>     
+              
+            <!-- <ul class="nav nav-sidebar">
                 <li><a href="#" id="view_new_ep"> Listado Quejas Recientes </a></li>
                 <?php echo Modules::run('complain/Complain/get_list', $quejas); ?>
-            </ul>
+            </ul> -->
         </div>
         <div class="col-sm-9 col-md-10" id='spacepublic'>
             <nav id='menu-ui' class='menu-ui'></nav>
@@ -241,6 +290,7 @@ body {
         </div>
     </div>
 </div>
+
 
 <script>
     // Add map
@@ -451,7 +501,7 @@ body {
                         }else{
                             $modal.find('.modal-body input').val('');
                             $modal.find('.modal-body textarea').val('');
-                            $modal.find('.modal-title').html('Queja EP Nuevo');
+                            $modal.find('.modal-title').html('Reporte de Inconsistencias en Espacio Público');
                             $modal.find('#buttonSendMessage').html('Enviar Queja');
                             $modal.find('.modal-footer .list-group').html('');
                             $modal.find('.attachments-complain').html('');
@@ -471,6 +521,8 @@ body {
           console.log('fail');
         });
     }
+
+
 
     /*
     * -----------------------------------------------------------

@@ -46,7 +46,7 @@ class Epnuevo_model extends CI_Model {
     'shape_area'          => $data[0]->area,
     'barrio'              => $data[0]->barrio,
     'comuna'              => $barrio[0]->fidcomuna,
-    'estra_moda'          => $barrio[0]->estra_moda;
+    'estra_moda'          => $barrio[0]->estra_moda,
     'idtipo'              => $data[0]->idtipo,
     'fechaactualizacion'  => $data[0]->fechaactualizacion,
     'fechacreacion'       => $data[0]->fechacreacion,

@@ -115,10 +115,13 @@ class Complain extends CI_Controller {
             ) 
         );
 
-        $this->output->set_content_type('application/json')
-             ->set_output( json_encode($output) );
+        /*$this->output->set_content_type('application/json')
+             ->set_output( json_encode($output) );*/
 
-        return;
+
+        redirect('public/index.php/geo/get_layers', 'refresh');
+
+        return ;
     }
 
     public function _upload($user_id, $new_queja){

@@ -15,7 +15,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="exampleModalLabel">Queja</h4>
+                <h4 class="modal-title" id="exampleModalLabel">Reporte de Inconsistencias en EP</h4>
             </div>
             <div class="modal-body">
                 <form id="formComplain" action="<?php echo base_url('public/index.php/complain/create'); ?>" method="post" enctype="multipart/form-data">
@@ -45,27 +45,27 @@
                     </div>
                     
                 </form>
-                <div class="row">
+                <!-- <div class="row">
                     <div class="col-xs-12">
                         <h5> Anexos </h5> </span>
                     </div>
                     <div class="attachments-complain">
                         
                     </div>
-                </div>
+                </div> -->
             </div>
             <div class="modal-footer">
-            <div class="panel panel-default">
+            <!-- <div class="panel panel-default">
               
                 <div class="panel-heading">Otras Quejas</div>
               
                 <div class="list-group">
-                  <!-- <a href="#" class="list-group-item">
+                  <a href="#" class="list-group-item">
                     <h4 class="list-group-item-heading">List group item heading</h4>
                     <p class="list-group-item-text">...</p>
-                  </a> -->
+                  </a>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </div>
@@ -76,13 +76,13 @@
         if(idx_complain_view == undefined){
             idx_complain_view = 0;
         }
-        var titleModal = 'Queja - Radicado:';
+        var titleModal = 'Reporte de Inconsistencias en EP - Radicado:';
 
         if($('#recipient_tipoep_id').val() == 4){
-            var titleModal = 'Queja EP Nuevo - Radicado:';
+            var titleModal = 'Reporte de Inconsistencias en EP - Radicado:';
         }
 
-        $('#complainModal .modal-title').html('Queja - Radicado: '+data.quejas[idx_complain_view].radicado+' - Fecha: '+data.quejas[idx_complain_view].fecha)
+        $('#complainModal .modal-title').html('Reporte de Inconsistencias en EP - Radicado: '+data.quejas[idx_complain_view].radicado+' - Fecha: '+data.quejas[idx_complain_view].fecha)
         $('#recipient_queja_id').val(data.quejas[idx_complain_view].id);
         $('#recipient_name').val(data.quejas[idx_complain_view].solicitante);
         $('#recipient_email').val(data.quejas[idx_complain_view].solicitante_email);
