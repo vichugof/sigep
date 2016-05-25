@@ -6,18 +6,15 @@
         <title>Welcome</title>
         <script type="text/javascript" src="https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.js?ver=4.3.1"></script>
         <link href='https://api.mapbox.com/mapbox.js/v2.2.4/mapbox.css' rel='stylesheet' />
-        <!-- <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">-->
-        <link href="http://localhost/~vichugof/sigep/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?php echo base_url('assets/bootstrap/css/bootstrap.min.css') ?>" rel="stylesheet">
 
         <script src="//code.jquery.com/jquery-1.12.0.min.js"></script>
         <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
-        <!-- <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js') ?>"></script>-->
-        <script src="http://localhost/~vichugof/sigep/assets/bootstrap/js/bootstrap.min.js"></script>
+         <script src="<?php echo base_url('assets/bootstrap/js/bootstrap.min.js') ?>"></script>
 
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/css/font-awesome.min.css' rel='stylesheet' />
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js'></script>
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.mapbox.css' rel='stylesheet' />
-
 
         <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.3/leaflet.draw.css' rel='stylesheet' />
         <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-draw/v0.2.3/leaflet.draw.js'></script>
@@ -25,7 +22,7 @@
     </head>
 
     <body>
-        <?php echo Modules::run('geo/Public_Space/get_main_view', array()); ?>
+        <?php echo Modules::run('geo/Public_Space/get_main_view', array('is_logged' => $is_logged)); ?>
         <script type="text/javascript">
             var geojsonEpriorizado;
             var geojsonEpropuesto;
@@ -299,7 +296,8 @@
                 console.log(dataRequest.center);
 
                 $.ajax({
-                    url: base_url+'/index.php/geo/get_ep',    
+                    //url: base_url+'/index.php/geo/get_ep',    
+                    url: base_url+'/geo/get_ep',    
                     type: "POST",
                     cache: false,
                     data: dataRequest
@@ -339,6 +337,7 @@
                     $modal.find('#buttonSendMessage').html('Enviar Queja');
                     $modal.find('.modal-footer .list-group').html('');
                     $modal.find('.attachments-complain').html('');
+                    setDataFormComplain(this.feature.properties, 0);
                 }
                 
                 $modal.modal('toggle');
@@ -405,7 +404,8 @@
                 };
 
                 $.ajax({
-                    url: base_url+'/index.php/complain/get',    
+                    //url: base_url+'/index.php/complain/get',    
+                    url: base_url+'/complain/get',    
                     type: "POST",
                     cache: false,
                     data: dataRequest
@@ -442,7 +442,8 @@
                             tipoep_id: tipoepId,
                         };
                         $.ajax({
-                            url: base_url+'index.php/geo/get_ep/centroid',    
+                            //url: base_url+'index.php/geo/get_ep/centroid',    
+                            url: base_url+'geo/get_ep/centroid',    
                             type: "POST",
                             cache: false,
                             data: dataRequest
@@ -526,8 +527,8 @@
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCfb2MlpqmJHgBEuF2hBG6AwNYARw_72d8&signed_in=true&callback=initialize">
         </script>
 
-        <?php echo Modules::run('complain/Complain/get_form_register', array()); ?>
-        <?php echo Modules::run('geo/Controller_Public_Space/get_form_pass_ep', array()); ?>
-        <?php echo Modules::run('geo/Controller_Public_Space/get_flash_section', array()); ?>
+        <?php echo Modules::run('complain/Complain/get_form_register', array('is_logged' => $is_logged)); ?>
+        <?php echo Modules::run('geo/Controller_Public_Space/get_form_pass_ep', array('is_logged' => $is_logged)); ?>
+        <?php echo Modules::run('geo/Controller_Public_Space/get_flash_section', array('is_logged' => $is_logged)); ?>
     </body>
 </html> 

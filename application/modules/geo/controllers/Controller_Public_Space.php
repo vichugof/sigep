@@ -1,6 +1,14 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
  
-class Controller_Public_Space extends CI_Controller {
+//class Controller_Public_Space extends CI_Controller {
+class Controller_Public_Space extends MX_Controller {
+
+    public function __construct(){
+        $this->autoload = array(
+          //'libraries' => array('session'),
+        );
+        parent::__construct();
+    }
     public function index()
     {
         //$this->load->view('public_space_index');
@@ -76,7 +84,7 @@ class Controller_Public_Space extends CI_Controller {
     }
 
     public function get_flash_section(){
-        $this->load->library('session');
+        //$this->load->library('session');
         $flashdata = $this->session->flashdata();
 
         $css_class = NULL;

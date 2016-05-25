@@ -8,7 +8,8 @@
                 <h4 class="modal-title" id="passFromNewEPToEPModal">EP NUEVO</h4>
             </div>
             <div class="modal-body">
-                <form id="formNewEP" class="form-horizontal" action="/geo/passtoep" method="post" enctype="multipart/form-data">
+                <!-- <form id="formNewEP" class="form-horizontal" action="/geo/passtoep" method="post" enctype="multipart/form-data"> -->
+                <form id="formNewEP" class="form-horizontal" action="<?php echo base_url('/geo/passtoep'); ?>" method="post" enctype="multipart/form-data">
                     <input type="hidden" name="recipient[ref-ep-id]" class="form-control" id="recipient_ref_ep_id" value="">
                     <input type="hidden" name="recipient[tipoep-id]" class="form-control" id="recipient_tipoep_id" value="">
                     <div class="form-group">
@@ -92,7 +93,8 @@
         $form.on('submit', function(event){
             event.preventDefault();
             $.ajax({
-                url: base_url+'index.php/geo/passtoep',    
+                //url: base_url+'index.php/geo/passtoep',    
+                url: base_url+'geo/passtoep',    
                 type: "POST",
                 cache: false,
                 data: $(this).serialize()

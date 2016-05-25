@@ -1,14 +1,20 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
  
-class Public_Space extends CI_Controller {
+//class Public_Space extends CI_Controller {
+class Public_Space extends MX_Controller {
 
     public function __construct(){
+        $this->autoload = array(
+        );
         parent::__construct();
     }
 
-    public function index()
-    {
-        $this->load->view('public_space_index');
+    public function inicio(){
+        $this->load->view('inicio');
+    }
+
+    public function index() {
+      redirect('geo/get_layers');
     }
 
     public function view_ep(){
@@ -36,7 +42,7 @@ class Public_Space extends CI_Controller {
     }
 
     public function create_ep(){
-      $this->load->library('session');
+      //$this->load->library('session');
       $session_data = $this->session->userdata();
       $user_id = $session_data['__ci_last_regenerate'];
 
@@ -176,8 +182,13 @@ class Public_Space extends CI_Controller {
     public function get_eptrabajo_layers(){
 
       $this->load->helper('text');
-      // $this->load->library('ion_auth');
-      $base_url_uploads = 'http://localhost/~vichugof/sigep/upload/';
+      
+      //$this->load->library('session');
+      //$this->load->library('users/ion_auth');
+      $is_logged = $this->load->ion_auth->logged_in();
+
+      //$base_url_uploads = 'http://localhost/~vichugof/sigep/upload/';
+      $base_url_uploads = base_url('/upload/');
       $base_url = base_url();
       $this->load->model('Barrio_model', 'Barrio');
       $this->load->model('Comuna_model', 'Comuna');
@@ -254,7 +265,8 @@ class Public_Space extends CI_Controller {
           'geojsonbarrio'      => $this->convertToGeojson($output_barrios),
           'quejas'             => $quejas,
           'base_url_uploads'   => $base_url_uploads,
-          'base_url'           => $base_url
+          'base_url'           => $base_url,
+          'is_logged'          => $is_logged
         )
       );
    }
@@ -300,9 +312,13 @@ class Public_Space extends CI_Controller {
       //load the model
       $this->load->model('Epnuevo_model', 'epnuevo');
 
-      $this->load->library('session');
-      $session_data = $this->session->userdata();
-      $user_id = $session_data['__ci_last_regenerate'];
+      $user_id = null;
+
+      if(!$this->load->ion_auth->logged_in()){
+        $session_data = $this->session->userdata();
+        $user_id = $session_data['__ci_last_regenerate'];  
+      }
+      
       //get the rows from ep
       $result = $this->epnuevo->get_entries($user_id);
       $output_epnuevo = array();
@@ -384,6 +400,7 @@ class Public_Space extends CI_Controller {
     }
 
     public function get_main_view($parameters){
+      //$this->load->library('users/ion_auth');
       $this->load->view( '_main_view',
             array(
               'parameters' => $parameters,

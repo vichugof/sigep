@@ -196,6 +196,12 @@ body {
     right: 20%;
     z-index: 1205;
 }
+
+.nav.nav-sidebar{
+    padding-left: 12px;
+    padding-right: 10px;
+}
+
 /*Fin creacion menu*/  
 
 </style>
@@ -214,11 +220,15 @@ body {
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Ingresar al sistema</a></li>
+                <?php if( $is_logged ): ?>
+                    <li><a href="<?php echo base_url('users/auth/logout'); ?>">Cerrar Sesión</a></li>
+                <?php else: ?>
+                    <li><a href="<?php echo base_url('users/auth/login'); ?>">Ingresar al sistema</a></li>
+                <?php endif; ?>
                 <li><a href="#">Ayuda</a></li>
             </ul>
-            <form class="navbar-form navbar-right">
-                <input class="form-control" placeholder="Search..." type="text">
+            <form class="navbar-form navbar-right" onsubmit="return false;">
+                <input class="form-control" id="input_search_complain" placeholder="Buscar Radicado..." type="text">
             </form>
         </div>
     </div>
@@ -226,19 +236,61 @@ body {
 <div class="container-fluid">
     <div class="row">
         <div id="wrapper_sidebar" class="col-sm-3 col-md-2 sidebar">
-            <ul class="nav nav-sidebar">
-                <!-- <li class="active" id="menu_tootle"><a href="#">Cerrar Panel <span class="sr-only">(current)</span></a></li> -->
+            <!-- <ul class="nav nav-sidebar">
                 <li><a href="#" id="create_new_ep"> Crear Nuevo Espacio </a></li>
                 <li><a href="#" id="view_new_ep"> Ver Nuevo Espacio </a></li>
-            </ul>
-            <?php //if( logged_in() ): ?>
-            <?php if( FALSE ): ?>
-                <pre>LOGGED IN!!!</pre>
+            </ul> -->
+            <?php if( $is_logged ): ?>
+                 <ul class="nav nav-sidebar">
+                <!-- <li><a href="#" id="create_new_ep"> Crear Nuevo Espacio </a></li> -->
+                <li><a href="#" id="view_new_ep"> Ver Nuevo Espacio </a></li>
+                </ul>
+                <ul class="nav nav-sidebar">
+                    <li><a href="#" id="view_new_ep"> Listado Quejas Recientes </a></li>
+                    <?php echo Modules::run('complain/Complain/get_list', $quejas); ?>
+                </ul>
+            <?php else: ?>
+                <ul class="nav nav-sidebar" >
+                <h4><b>  Control de Espacio Público </b></h4> 
+                                                
+                    <h5>
+                        <!-- <a href="javascript:void(0);" onclick="window.open('http://localhost/sigep/public/index.php/geo/inicio', 'popup', 'left=190, top=100, width=400, height=500, toolbar=0,  resizable=1')">Inicio</a> -->
+                        <a href="javascript:void(0);" onclick="window.open('<?php echo base_url('/geo/inicio'); ?>', 'popup', 'left=190, top=100, width=400, height=500, toolbar=0,  resizable=1')">Inicio</a>
+                    </h5>                                                 
+
+                    <li> 
+                        <h4><b>  Enlaces de Interés </b></h4>
+                        <ul> 
+                            <li> <a href="http://www.cali.gov.co/  gobierno/publicaciones/rea_espacio_pblico_pub"> ¿Qué es EP? </a></li>        
+                            <li> <a href="http://www.cali.gov.co/loader.php?lServicio=FAQ&lFuncion=viewPreguntas&id=83"> Reglamentación en EP </a></li>
+                            <li > <a href="http://idesc.cali.gov.co/download/guias/manual_mecep.pdf"> Manual de Elementos Constitutivos del EP </a></li> 
+                            <li> <a href="https://www.minambiente.gov.co/images/AsuntosambientalesySectorialyUrbana/pdf/Gestion_urbana/espacio_publico/CONPES_3718_de_2012_-_Pol%C3%ADtica_Nacional_de_Espacio_P%C3%BAblico.pdf"> Política Nacional de Espacio Público </a></li> 
+                            <li> <a href="http://www.cali.gov.co/publicaciones/documentos_de_la_propuesta_de_revisin_y_ajuste_del_pot_de_cali_2013_pub"> POT 2014 </a></li>
+                            <li> <a href="http://www.cali.gov.co/publicaciones/propuestas_tematicas_del_pot_pub"> Propuesta Mejoramiento EP </a></li>
+                        </ul>
+                    </li>
+
+                    <li>
+                        <h4><b> Contáctos</b></h4>
+                        <ul>
+                            <p>  Dependencias</p>
+                            <li><a href="http://www.cali.gov.co/planeacion/"> Planeación </a></li>
+                            <li><a href="http://www.cali.gov.co/dagma/"> DAGMA </a></li>
+                            <br>
+                            <p> Entidades Asociadas</p>
+                            <li><a href="http://www.emcali.com.co/"> EMCALI</a></li>
+                            <li><a href="http://www.metrocali.gov.co/cms/"> MetroCali</a></li>
+                            <li><a href="http://www.emru.gov.co/"> EMRU</a></li>
+
+                        </ul>
+                    </li>
+                    <h4> <b>Radique su solicitud </b></h4>
+                    <p style="text-align: justify; margin-right: 0.7em;">Genere su queja al dar clic sobre los polígonos de EP actuales o sobre el poligono de EP creado por usted por motivos de la queja.</p>
+                    
+                    <li> <a href="#" id="create_new_ep"> Crear EP Nuevo </a> </li>
+                    <li> <a href="#" id="view_new_ep"> Ver Nuevo Espacio </a> </li>
+                </ul>
             <?php endif; ?>
-            <ul class="nav nav-sidebar">
-                <li><a href="#" id="view_new_ep"> Listado Quejas Recientes </a></li>
-                <?php echo Modules::run('complain/Complain/get_list', $quejas); ?>
-            </ul>
         </div>
         <div class="col-sm-9 col-md-10" id='spacepublic'>
             <nav id='menu-ui' class='menu-ui'></nav>
@@ -296,6 +348,23 @@ body {
         $('#view_new_ep').click(function(e){
             e.preventDefault(); toggleNewEp();
         });
+
+        $('#input_search_complain')
+        .keyup(function(e){
+            e.preventDefault();
+            if(e.keyCode == 13 && $(this).val().trim() != ''){
+                //$(this).trigger("enterKey");
+                retrieveComplainByRadicado($(this).val().trim());
+            }
+            return false;
+        })
+        // .bind("enterKey",function(e){
+        //     e.preventDefault();
+        //     //alert("Enter");
+        //     retrieveComplainByRadicado()
+        //     return false;
+        // });
+        ;
     });
 
     //MENU UI -- CARGA CAPAS
@@ -394,7 +463,8 @@ body {
         if(layersGeoJson.length > 0){
 
             $.ajax({
-                url: base_url+'/index.php/geo/create_ep',    
+                //url: base_url+'/index.php/geo/create_ep',    
+                url: base_url+'/geo/create_ep',    
                 type: "POST",
                 cache: false,
                 data: dataRequest
@@ -451,7 +521,8 @@ body {
         };
    
         $.ajax({
-            url: base_url+'/index.php/geo/get_new_eps',
+            //url: base_url+'/index.php/geo/get_new_eps',
+            url: base_url+'/geo/get_new_eps',
             type: "POST",
             cache: false,
             data: dataRequest
@@ -534,6 +605,73 @@ body {
             position -= menu;
         console.log(position);
         return position
+    };
+
+    var retrieveComplainByRadicado = function(radicado){
+        var dataRequest = { radicado: radicado };
+
+        $.ajax({
+            //url: base_url+'/index.php/geo/get_new_eps',
+            url: base_url+'/complain/get_complain/radicado',
+            type: "POST",
+            cache: false,
+            data: dataRequest
+        })
+        .done(function( result ) {
+
+            if(result.success == true && result.data.success == 'success'){
+console.log(result.data);
+                if(result.data.supplemental.geo.features[0] != undefined){
+                    var centroid = result.data.supplemental.geo.features[0].properties.centroid.coordinates;
+                    var ep_id = result.data.supplemental.geo.features[0].properties.id;
+                    var id_tipo = result.data.supplemental.geo.features[0].properties.id_tipo;   
+
+                    map.setView([centroid[1], centroid[0]], 17);
+
+                    var featureLayerTemp;
+
+                    layerSelectedProccessed = result.data.supplemental.geo.features[0].properties;
+
+                   
+                    var modified_layer = setTimeout(function(){ change_layer(); }, 700);
+///console.log('modified_layer', id_tipo, modified_layer);
+                    var change_layer = function(){
+                        if(id_tipo == 1){
+                            featureLayer.eachLayer(function (layer) {
+                                //console.log('layer.properties featureLayer', layer);
+                                if(layer.feature.properties.id == ep_id)
+                                    layer.setStyle({fillColor: '#5B77DE'});
+                            });
+
+                        } else if(id_tipo == 4){
+                            var layersLoaded = featureLayerEpnuevo.getLayers();
+                            var layerDisplayed = false;
+                            if(layersLoaded.length > 0){
+                                featureLayerEpnuevo.eachLayer(function (layer) {
+                                    if(ayer.feature.properties.id == ep_id)
+                                        layerDisplayed = true;
+                                });
+                            }
+//console.log('layerDisplayed', layerDisplayed);
+                            if(!layerDisplayed){
+                                console.log('create new layer to see the complain', result.data.supplemental.geo);
+                                featureLayerTemp = featureLayerEpnuevo;
+                                featureLayerTemp.setGeoJSON( result.data.supplemental.geo );
+
+                                featureLayerTemp.eachLayer(function (layer) {
+                                    layer.setStyle({fillColor: '#5B77DE'});
+                                    layer.on('click', addEventClickLayerToOpenComplain);
+                                });
+                                map.addLayer(featureLayerTemp);
+                            }
+                        }
+                    };
+                }
+            }
+        })
+        .fail(function( jqXHR, textStatus ) {
+          console.log('fail');
+        });
     }
 
     /*

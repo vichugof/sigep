@@ -1,8 +1,5 @@
 <IfModule mod_rewrite.c>
-
-RewriteEngine on
-
-RewriteCond $1 !^(index\.php|assets|upload|robots\.txt)
-RewriteRule ^(.*)$ index.php/$1 [PT,L]  
-
+    RewriteEngine on
+    RewriteRule  ^$ public/    [L]
+    RewriteRule  (.*) public/$1 [L]
 </IfModule>

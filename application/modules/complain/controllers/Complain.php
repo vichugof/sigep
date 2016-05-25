@@ -1,6 +1,7 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
  
-class Complain extends CI_Controller {
+//class Complain extends CI_Controller {
+class Complain extends MX_Controller {
 
     function __construct(){
         parent::__construct();
@@ -55,6 +56,76 @@ class Complain extends CI_Controller {
        );
     }
 
+    public function get_complain_by_radicado(){
+        $this->load->model('Queja_model', 'queja');
+        $this->load->model('Anexosep_model', 'anexos');
+
+        $radicado  = $this->input->post('radicado');
+
+        $queja  = $this->queja->search_radicado($radicado);
+
+        if(isset($queja->id) && $queja->id > 0){
+            $anexos = $this->anexos->where('queja_id =', $queja->queja_id)->get_all();
+            
+            $output = array();
+            $feature = array();
+
+            if ( (int)$queja->tipoep_id === 4 ){
+
+                $feature['id']          = $queja->id;
+                $feature['the_geom']    = (array)json_decode($queja->epn_geom);
+                $feature['shape_area']  = $queja->epn_area;
+                $feature['centroid']    = (array)json_decode($queja->epn_centroid);
+                $feature['id_tipo']     = $queja->tipoep_id;
+                $output = $feature ;
+
+            }else if( (int)$queja->tipoep_id === 1 ){
+
+                $feature['id']          = $queja->id;
+                $feature['the_geom']    = (array)json_decode($queja->ep_geom);
+                $feature['shape_area']  = $queja->ep_area;
+                $feature['centroid']    = (array)json_decode($queja->ep_centroid);
+                $feature['nombre']      = $queja->ep_nombre;
+                $feature['categoria']   = $queja->categoria;
+                $feature['escala']      = $queja->escala;
+                $feature['fuente']      = $queja->fuente;
+                $feature['id_tipo']     = $queja->tipoep_id;
+                $output = $feature ;
+            }
+
+            unset($queja->epn_geom);
+            unset($queja->epn_area);
+            unset($queja->epn_centroid);
+            unset($queja->ep_geom);
+            unset($queja->ep_area);
+            unset($queja->ep_centroid);
+            unset($queja->ep_nombre);
+            unset($queja->categoria);
+            unset($queja->escala);
+            unset($queja->fuente);
+
+            $queja->anexos = $anexos;
+            $output['quejas'][] = $queja;
+
+            $output = Modules::run( 'geo/Public_Space/convertToGeojson', array('coordinates' => $output) );    
+            //$result = array('anexos' => $anexos, 'queja' => $queja, 'geo' => $output);
+            $result = array( 'geo' => $output);
+        }else{
+            $result = array();
+        }
+
+        $output = array(
+            'success'   => true,
+            'data'      => array(
+                'success'       => 'success', 
+                'supplemental'  => $result
+            ) 
+        );
+
+        $this->output->set_content_type('application/json')
+             ->set_output( json_encode($output) );
+    }
+
     public function get_form_register($parameters){
 
         $this->load->view( '_form_register',
@@ -67,7 +138,7 @@ class Complain extends CI_Controller {
 
     public function create(){
         
-        $this->load->library('session');
+        //$this->load->library('session');
         $this->load->model('Queja_model', 'queja');
 
         $session_data = $this->session->userdata();
@@ -110,6 +181,7 @@ class Complain extends CI_Controller {
             $new_queja = $this->queja->insert($data);
         }
         
+        $queja = $this->queja->where('id =', $new_queja[0])->get();
 
         $data_uploaded = $this->_upload($user_id, $new_queja);
 
@@ -126,12 +198,13 @@ class Complain extends CI_Controller {
 
         if(!isset($data_uploaded['upload_errors'])){
             if( !($queja_id > 0) )
-                $this->session->set_flashdata('success_msg', 'La queja ha sido creada con el siguiente NÚMERO DE RADICADO: '.$radicado);
+                $this->session->set_flashdata('success_msg', 'La queja ha sido creada con el siguiente NÚMERO DE RADICADO: '.$queja->radicado);
             else
-                $this->session->set_flashdata('success_msg', 'La ha queja sido modificada, NÚMERO DE RADICADO: '.$radicado);
+                $this->session->set_flashdata('success_msg', 'La queja ha sido modificada, NÚMERO DE RADICADO: '.$queja->radicado);
         }
 
-        redirect('index.php/geo/get_layers');
+        //redirect('index.php/geo/get_layers');
+        redirect('geo/get_layers');
 
         return;
     }
